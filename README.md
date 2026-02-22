@@ -38,4 +38,12 @@ Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tom
 
 <img width="1035" height="570" alt="5" src="https://github.com/user-attachments/assets/ff8beff3-0ed5-430c-b7bb-fddb39f3641d" />
 
+Los resultados se guardan en un `excel` y un `html` interactivo para su posterior análisis:
 
+<img width="1641" height="811" alt="6" src="https://github.com/user-attachments/assets/22f5b36d-edcc-42d9-9beb-231334b1f830" />
+
+<img width="1919" height="954" alt="7" src="https://github.com/user-attachments/assets/1d638ec5-6fb8-4e76-8e1b-0f77946f4a32" />
+
+<img width="1919" height="947" alt="8" src="https://github.com/user-attachments/assets/f13a401b-be27-4438-ad41-92d507476e72" />
+
+<img width="1919" height="938" alt="9" src="https://github.com/user-attachments/assets/f15327a3-7037-4215-a073-766b317b9f5a" />
