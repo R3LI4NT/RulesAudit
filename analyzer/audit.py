@@ -156,14 +156,6 @@ def main():
                 'INFORMATIVA': sum(1 for v in vulnerabilidades if v['Severidad'] == 'INFORMATIVA')
             }
             
-            print(f"\n[+] Estadísticas de severidad:")
-            print(f"   • Total vulnerabilidades: {len(vulnerabilidades)}")
-            print(f"   • 🔴🔴 CRÍTICA: {stats_severidad['CRÍTICA']}")
-            print(f"   • 🔴 ALTA: {stats_severidad['ALTA']}")
-            print(f"   • 🟠 MEDIA: {stats_severidad['MEDIA']}")
-            print(f"   • 🟢 BAJA: {stats_severidad['BAJA']}")
-            print(f"   • 🔵 INFORMATIVA: {stats_severidad['INFORMATIVA']}")
-            
             print(f"\n[+] Reportes generados para: {nombre_cliente}")
             print(f"   • Excel: {nombre_excel}")
             print(f"   • HTML: {nombre_html}")
