@@ -4,11 +4,11 @@
 
 <p align="center">
    <a href="https://dotnet.microsoft.com/">
-    <img src="https://img.shields.io/badge/Python-Tool-green.svg">
+    <img src="https://img.shields.io/badge/Python-Tool-00DD00.svg">
   </a>
-    <img src="https://img.shields.io/badge/Release-1.0-green.svg">
+    <img src="https://img.shields.io/badge/Release-1.0-00DD00.svg">
   </a>
-    <img src="https://img.shields.io/badge/Public-%F0%9F%97%9D%EF%B8%8F-green.svg">
+    <img src="https://img.shields.io/badge/Public-%F0%9F%97%9D%EF%B8%8F-00DD00.svg">
   </a>
 </p>
 
