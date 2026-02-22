@@ -47,3 +47,19 @@ Los resultados se guardan en un `excel` y un `html` interactivo para su posterio
 <img width="1919" height="947" alt="8" src="https://github.com/user-attachments/assets/f13a401b-be27-4438-ad41-92d507476e72" />
 
 <img width="1919" height="938" alt="9" src="https://github.com/user-attachments/assets/f15327a3-7037-4215-a073-766b317b9f5a" />
+
+<h1 align="center"></h1>
+
+### Consideraciones a tener en cuenta
+
+El motor construido se basa en la lógica del Analista, usted debe analizar si las configuraciones inseguras encontradas son válidas y si corresponden a la severidad clasificada. Siéntase libre de optimizar y ampliar el archivo `vulns.json` para mejorar la precisión en la detección y clasificación de vulnerabilidades.
+
+<h1 align="center"></h1>
+
+Correo de contacto:
+
+<img src="https://img.shields.io/badge/r3li4nt.contact@keemail.me-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
+
+<h1 align="center"></h1>
+
+#### Developer: ~R3LI4NT~
