@@ -40,7 +40,7 @@ Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tom
 
 Los resultados se guardan en un `excel` y un `html` interactivo para su posterior análisis:
 
-<img width="1641" height="811" alt="6" src="https://github.com/user-attachments/assets/22f5b36d-edcc-42d9-9beb-231334b1f830" />
+<img width="1641" height="811" alt="excel" src="https://github.com/user-attachments/assets/74bcbd55-3c2d-427c-a6b8-2cc10d391586" />
 
 El reportador HTML permite exportar un CSV si usted así lo requiere.
 
