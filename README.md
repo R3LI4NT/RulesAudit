@@ -46,7 +46,7 @@ El reportador HTML permite exportar un CSV si usted así lo requiere.
 
 <img width="1919" height="954" alt="7" src="https://github.com/user-attachments/assets/1d638ec5-6fb8-4e76-8e1b-0f77946f4a32" />
 
-<img width="1919" height="947" alt="8" src="https://github.com/user-attachments/assets/f13a401b-be27-4438-ad41-92d507476e72" />
+<img width="1919" height="947" alt="html" src="https://github.com/user-attachments/assets/b2cae175-77a2-4bb2-9164-cd33d9121c77" />
 
 <img width="1919" height="938" alt="9" src="https://github.com/user-attachments/assets/f15327a3-7037-4215-a073-766b317b9f5a" />
 
