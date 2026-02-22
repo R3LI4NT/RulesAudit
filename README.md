@@ -1,2 +1,21 @@
-# RulesAudit
-Herramienta para auditoría de reglas de Firewall.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ff41328a-bcef-4cc8-9106-0ef153eed3c8" alt="RulesAudit" Logo" />
+</p>
+
+<p align="center">
+   <a href="https://dotnet.microsoft.com/">
+    <img src="https://img.shields.io/badge/C%23-Backdoor-blue.svg">
+  </a>
+    <img src="https://img.shields.io/badge/Release-2.0-blue.svg">
+  </a>
+    <img src="https://img.shields.io/badge/Public-%F0%9F%97%9D%EF%B8%8F-blue.svg">
+  </a>
+</p>
+
+<h1 align="center"></h1>
+
+### Acerca de XilentDoor
+
+XilentDoor es un backdoor escrito en C# orientado a sistemas Windows. Un backdoor es un tipo de malware diseñado para abrir una puerta trasera permanente en el equipo comprometido, permitiendo al atacante acceder y controlar el sistema de forma sigilosa. 
+
+Es parte de la familia <a href="https://github.com/R3LI4NT/XilentLocker">XilentLocker</a>, <a href="https://github.com/R3LI4NT/XilentRAT">XilentRAT</a> y <a href="https://github.com/R3LI4NT/XilentLogger">XilentLogger</a>
