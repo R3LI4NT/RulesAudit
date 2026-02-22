@@ -54,6 +54,8 @@ Los resultados se guardan en un `excel` y un `html` interactivo para su posterio
 
 El motor construido se basa en la lógica del Analista, usted debe analizar si las configuraciones inseguras encontradas son válidas y si corresponden a la severidad clasificada. Siéntase libre de optimizar y ampliar el archivo `vulns.json` para mejorar la precisión en la detección y clasificación de vulnerabilidades.
 
+El script `IA_audit.py` corresponde a un analizador de reglas pero utilizando la IA de Gemini que aún se encuentra en fase de pruebas.
+
 <h1 align="center"></h1>
 
 Correo de contacto:
