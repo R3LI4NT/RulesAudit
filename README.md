@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ff41328a-bcef-4cc8-9106-0ef153eed3c8" alt="RulesAudit" Logo" />
+  <img src="https://github.com/user-attachments/assets/8034df25-2098-4831-bc4b-e8f049745e64" alt="RulesAudit" Logo" />
 </p>
 
 <p align="center">
