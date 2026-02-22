@@ -16,4 +16,4 @@
 
 ### Acerca de RulesAudit
 
-RulesAudit
+RulesAudit es una herramienta desarrollada en Python para analizar configuraciones inseguras en reglas de Firewalls. 
