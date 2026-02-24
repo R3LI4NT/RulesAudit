@@ -30,6 +30,10 @@ Utiliza <a href="https://pandas.pydata.org/">Pandas</a> para estructurar los dat
 
 <img width="1755" height="774" alt="3" src="https://github.com/user-attachments/assets/1f97a5a3-8671-4b7f-b124-85f9ba7b2c38" />
 
+En caso de que las reglas exportadas del cliente tenga diferentes formatos, pueden modificar el archivo `analyzer.py ` para especificarle los headers.
+
+<img width="1096" height="887" alt="formatos" src="https://github.com/user-attachments/assets/eda0112b-9ad7-456c-97d5-c6570ee21489" />
+
 <h1 align="center"></h1>
 
 Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tomar las reglas y analizarlas en busca de configuración insegura basandose en el motor `vulns.json`.
