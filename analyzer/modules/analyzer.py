@@ -1,5 +1,3 @@
-#Módulo para análisis de vulnerabilidades en reglas de firewall usando el motor vulns.json
-
 import re
 import json
 import os
@@ -9,14 +7,103 @@ import pandas as pd
 
 
 class FirewallRuleAnalyzer:
+    #formatos soportados con sus mapeos
+    FORMATOS = {
+        'estandar': {
+            'nombre': 'Formato Estándar (12 columnas)',
+            'mapeo': {
+                'policy': 0,
+                'source': 1,
+                'dest': 2,
+                'schedule': 3,
+                'service': 4,
+                'action': 5,
+                'ip_pool': 6,
+                'nat': 7,
+                'type': 8,
+                'security_profiles': 9,
+                'log': 10,
+                'bytes': 11
+            },
+            'aliases': {
+                'source': ['source', 'origen', 'src'],
+                'dest': ['dest', 'destination', 'destino', 'dst'],
+                'service': ['service', 'services', 'servicio'],
+                'action': ['action', 'accion']
+            }
+        },
+        'especifico': {
+            'nombre': 'Formato Específico (14 columnas)',
+            'mapeo': {
+                'numero': 0,
+                'type': 1,
+                'hits': 2,
+                'first_hits': 3,
+                'last_hits': 4,
+                'name': 5,
+                'source': 6,
+                'destination': 7,
+                'vpn': 8,
+                'services': 9,
+                'action': 10,
+                'track': 11,
+                'install_on': 12,
+                'uid': 13
+            },
+            'aliases': {
+                'source': ['source', 'origen', 'src'],
+                'dest': ['dest', 'destination', 'destino', 'dst'],
+                'service': ['service', 'services', 'servicio', 'services & applications'],
+                'action': ['action', 'accion']
+            }
+        },
+        'checkpoint': {
+            'nombre': 'Formato CheckPoint',
+            'mapeo': {
+                'number': 0,
+                'name': 1,
+                'source': 2,
+                'destination': 3,
+                'service': 4,
+                'action': 5,
+                'track': 6,
+                'install_on': 7,
+                'comments': 8,
+                'uid': 9
+            },
+            'aliases': {
+                'source': ['source', 'src'],
+                'dest': ['destination', 'dst'],
+                'service': ['service', 'services']
+            }
+        }
+    }
     
-    def __init__(self, df, vulns_file=None):
+    def __init__(self, df, vulns_file=None, formato=None):
         self.df = df
         self.vulnerabilidades = []
         self.estadisticas = defaultdict(int)
         self.reglas_por_interface = defaultdict(list)
         self.config = self._cargar_configuracion(vulns_file)
+        self.formato = self._detectar_formato(formato)
+        self.idx_map = self.FORMATOS[self.formato]['mapeo']
         
+        print(f"   [+] Usando formato: {self.FORMATOS[self.formato]['nombre']}")
+        
+    def _detectar_formato(self, formato_especificado=None):
+        if formato_especificado and formato_especificado in self.FORMATOS:
+            return formato_especificado
+        
+        num_columnas = len(self.df.columns)
+        
+        if num_columnas >= 14:
+            return 'especifico'
+        elif num_columnas >= 12:
+            return 'estandar'
+        else:
+            print(f"   [!] Número de columnas {num_columnas} no reconocido, usando formato estándar")
+            return 'estandar'
+    
     def _cargar_configuracion(self, vulns_file=None):
         config = {}
         
@@ -64,10 +151,69 @@ class FirewallRuleAnalyzer:
                     "recomendacion": "Usar SSH",
                     "tipo": "RIESGO",
                     "severidad": "MEDIA"
+                },
+                {
+                    "nombre": "FTP",
+                    "patron": "ftp",
+                    "descripcion": "Protocolo sin cifrar",
+                    "recomendacion": "Usar SFTP/FTPS",
+                    "tipo": "RIESGO",
+                    "severidad": "ALTA"
+                },
+                {
+                    "nombre": "HTTP",
+                    "patron": "http(?!s)",
+                    "descripcion": "Tráfico web sin cifrar",
+                    "recomendacion": "Usar HTTPS",
+                    "tipo": "RIESGO",
+                    "severidad": "MEDIA"
+                }
+            ],
+            "patrones_avanzados": [
+                {
+                    "nombre": "cualquier_origen",
+                    "descripcion": "Regla que permite cualquier origen",
+                    "recomendacion": "Restringir el origen a IPs específicas",
+                    "tipo": "RIESGO",
+                    "severidad": "ALTA",
+                    "condiciones": [
+                        {
+                            "campo": "source",
+                            "patron": "^(any|all|0.0.0.0/0)$",
+                            "tipo": "regex",
+                            "negado": False
+                        }
+                    ]
                 }
             ]
         }
+    
+    def _obtener_valor(self, row, campo):
+        # Buscar el campo en el mapeo
+        for key, idx in self.idx_map.items():
+            if campo in key or key in campo:
+                if len(row) > idx and pd.notna(row.iloc[idx]):
+                    return str(row.iloc[idx])
         
+        # Si no se encuentra, buscar por alias
+        formato_info = self.FORMATOS[self.formato]
+        if 'aliases' in formato_info:
+            for key, aliases in formato_info['aliases'].items():
+                if campo in aliases and key in self.idx_map:
+                    idx = self.idx_map[key]
+                    if len(row) > idx and pd.notna(row.iloc[idx]):
+                        return str(row.iloc[idx])
+        
+        return ""
+    
+    def _obtener_numero_regla(self, row):
+        if self.formato == 'especifico':
+            return self._obtener_valor(row, 'numero')
+        elif self.formato == 'estandar':
+            return self._obtener_valor(row, 'policy')
+        else:
+            return self._obtener_valor(row, 'number') or self._obtener_valor(row, 'name')
+    
     def analizar(self):
         self._separar_por_interface()
         self._analizar_patrones_avanzados()
@@ -76,7 +222,38 @@ class FirewallRuleAnalyzer:
         self._analizar_sobreposicion_reglas()
         self._analizar_reglas_duplicadas()
         self._analizar_shadows_rules()
+        
+        if self.formato == 'especifico':
+            self._analizar_especifico()
+        
         return self.vulnerabilidades
+    
+    def _analizar_especifico(self):
+        for seccion, reglas in self.reglas_por_interface.items():
+            for row in reglas:
+                # Analizar reglas deshabilitadas
+                type_val = self._obtener_valor(row, 'type')
+                if '[Disabled]' in type_val:
+                    self._agregar_vulnerabilidad(
+                        tipo='INEFICIENCIA',
+                        severidad='BAJA',
+                        seccion=seccion,
+                        regla=self._obtener_numero_regla(row),
+                        descripcion='Regla deshabilitada',
+                        recomendacion='Eliminar reglas deshabilitadas para mantener configuración limpia'
+                    )
+                
+                # Analizar reglas con cero hits
+                hits_val = self._obtener_valor(row, 'hits')
+                if 'Zero' in hits_val:
+                    self._agregar_vulnerabilidad(
+                        tipo='INEFICIENCIA',
+                        severidad='MEDIA',
+                        seccion=seccion,
+                        regla=self._obtener_numero_regla(row),
+                        descripcion='Regla sin uso (0 hits)',
+                        recomendacion='Revisar necesidad de la regla'
+                    )
     
     def _separar_por_interface(self):
         seccion_actual = "General"
@@ -104,7 +281,7 @@ class FirewallRuleAnalyzer:
                         tipo=patron.get('tipo', 'RIESGO'),
                         severidad=patron.get('severidad', 'MEDIA'),
                         seccion=seccion,
-                        regla=row.iloc[0],
+                        regla=self._obtener_numero_regla(row),
                         descripcion=patron.get('descripcion', 'Vulnerabilidad detectada'),
                         recomendacion=patron.get('recomendacion', 'Revisar configuración')
                     )
@@ -116,21 +293,6 @@ class FirewallRuleAnalyzer:
         if not condiciones:
             return False
         
-        idx_map = {
-            'policy': 0,
-            'source': 1,
-            'dest': 2,
-            'schedule': 3,
-            'service': 4,
-            'action': 5,
-            'ip_pool': 6,
-            'nat': 7,
-            'type': 8,
-            'security_profiles': 9,
-            'log': 10,
-            'bytes': 11
-        }
-        
         for cond in condiciones:
             campo = cond.get('campo', '')
             patron_str = cond.get('patron', '')
@@ -141,21 +303,17 @@ class FirewallRuleAnalyzer:
                 campos = campo.split('|')
                 coincide = False
                 for c in campos:
-                    if c in idx_map:
-                        valor = str(row.iloc[idx_map[c]]) if len(row) > idx_map[c] and pd.notna(row.iloc[idx_map[c]]) else ""
-                        if self._verificar_condicion(valor, patron_str, tipo, cond):
-                            coincide = True
-                            break
+                    valor = self._obtener_valor(row, c)
+                    if self._verificar_condicion(valor, patron_str, tipo, cond):
+                        coincide = True
+                        break
                 if not coincide and not negado:
                     return False
                 elif coincide and negado:
                     return False
                 continue
             
-            if campo not in idx_map:
-                continue
-                
-            valor = str(row.iloc[idx_map[campo]]) if len(row) > idx_map[campo] and pd.notna(row.iloc[idx_map[campo]]) else ""
+            valor = self._obtener_valor(row, campo)
             resultado = self._verificar_condicion(valor, patron_str, tipo, cond)
             
             if negado:
@@ -219,11 +377,8 @@ class FirewallRuleAnalyzer:
         
         for seccion, reglas in self.reglas_por_interface.items():
             for row in reglas:
-                if len(row) < 5:
-                    continue
-                    
-                servicio = str(row.iloc[4]) if pd.notna(row.iloc[4]) else ""
-                action = str(row.iloc[5]) if pd.notna(row.iloc[5]) else ""
+                servicio = self._obtener_valor(row, 'service')
+                action = self._obtener_valor(row, 'action')
                 
                 if action.upper() == 'ACCEPT':
                     for svc in servicios:
@@ -233,7 +388,7 @@ class FirewallRuleAnalyzer:
                                 tipo=svc.get('tipo', 'RIESGO'),
                                 severidad=svc.get('severidad', 'MEDIA'),
                                 seccion=seccion,
-                                regla=row.iloc[0],
+                                regla=self._obtener_numero_regla(row),
                                 descripcion=f"Servicio {svc.get('nombre', patron.upper())} permitido: {svc.get('descripcion', '')}",
                                 recomendacion=svc.get('recomendacion', 'Usar versión segura')
                             )
@@ -242,12 +397,9 @@ class FirewallRuleAnalyzer:
     def _analizar_redes_expuestas(self):
         for seccion, reglas in self.reglas_por_interface.items():
             for row in reglas:
-                if len(row) < 2:
-                    continue
-                    
-                source = str(row.iloc[1]) if pd.notna(row.iloc[1]) else ""
-                dest = str(row.iloc[2]) if pd.notna(row.iloc[2]) else ""
-                action = str(row.iloc[5]) if pd.notna(row.iloc[5]) else ""
+                source = self._obtener_valor(row, 'source')
+                dest = self._obtener_valor(row, 'dest')
+                action = self._obtener_valor(row, 'action')
                 
                 if action.upper() == 'ACCEPT':
                     for texto in [source, dest]:
@@ -259,7 +411,7 @@ class FirewallRuleAnalyzer:
                                         tipo='RIESGO',
                                         severidad='MEDIA',
                                         seccion=seccion,
-                                        regla=row.iloc[0],
+                                        regla=self._obtener_numero_regla(row),
                                         descripcion=f'Red demasiado amplia expuesta (/{mascara})',
                                         recomendacion='Segmentar en redes más pequeñas (ideal /24 o más específicas)'
                                     )
@@ -282,36 +434,27 @@ class FirewallRuleAnalyzer:
                     regla1 = reglas[i]
                     regla2 = reglas[j]
                     
-                    if len(regla1) < 6 or len(regla2) < 6:
-                        continue
+                    action1 = self._obtener_valor(regla1, 'action')
+                    action2 = self._obtener_valor(regla2, 'action')
                     
-                    if regla1.iloc[5] == 'DENY' and regla2.iloc[5] == 'ACCEPT':
+                    if action1 == 'DENY' and action2 == 'ACCEPT':
                         if self._reglas_similares(regla1, regla2, campos, min_coincidencias):
                             self._agregar_vulnerabilidad(
                                 tipo=config_shadow.get('tipo', 'RIESGO'),
                                 severidad=config_shadow.get('severidad', 'MEDIA'),
                                 seccion=seccion,
-                                regla=f"{regla1.iloc[0]} vs {regla2.iloc[0]}",
+                                regla=f"{self._obtener_numero_regla(regla1)} vs {self._obtener_numero_regla(regla2)}",
                                 descripcion=config_shadow.get('descripcion', 'Posible shadow rule'),
                                 recomendacion=config_shadow.get('recomendacion', 'Revisar orden de reglas')
                             )
     
     def _reglas_similares(self, regla1, regla2, campos, min_coincidencias):
-        idx_map = {
-            'source': 1,
-            'dest': 2,
-            'service': 4,
-            'action': 5
-        }
-        
         coincidencias = 0
         for campo in campos:
-            if campo in idx_map:
-                idx = idx_map[campo]
-                val1 = str(regla1.iloc[idx]) if len(regla1) > idx and pd.notna(regla1.iloc[idx]) else ""
-                val2 = str(regla2.iloc[idx]) if len(regla2) > idx and pd.notna(regla2.iloc[idx]) else ""
-                if val1 == val2:
-                    coincidencias += 1
+            val1 = self._obtener_valor(regla1, campo)
+            val2 = self._obtener_valor(regla2, campo)
+            if val1 == val2:
+                coincidencias += 1
         
         return coincidencias >= min_coincidencias
     
@@ -323,39 +466,28 @@ class FirewallRuleAnalyzer:
         campos_clave = config_dup.get('campos_clave', ['source', 'dest', 'service', 'action'])
         
         reglas_vistas = {}
-        idx_map = {
-            'source': 1,
-            'dest': 2,
-            'service': 4,
-            'action': 5
-        }
         
         for seccion, reglas in self.reglas_por_interface.items():
             for idx, row in enumerate(reglas):
-                if len(row) < 6:
-                    continue
-                    
-                clave = self._crear_clave_regla(row, campos_clave, idx_map)
+                clave = self._crear_clave_regla(row, campos_clave)
                 
                 if clave in reglas_vistas:
                     self._agregar_vulnerabilidad(
                         tipo=config_dup.get('tipo', 'ADVERTENCIA'),
                         severidad=config_dup.get('severidad', 'BAJA'),
                         seccion=seccion,
-                        regla=row.iloc[0],
+                        regla=self._obtener_numero_regla(row),
                         descripcion=config_dup.get('descripcion', 'Regla duplicada'),
                         recomendacion=config_dup.get('recomendacion', 'Eliminar reglas duplicadas')
                     )
                 else:
                     reglas_vistas[clave] = True
     
-    def _crear_clave_regla(self, row, campos_clave, idx_map):
+    def _crear_clave_regla(self, row, campos_clave):
         componentes = []
         for campo in campos_clave:
-            if campo in idx_map:
-                idx = idx_map[campo]
-                valor = str(row.iloc[idx]) if len(row) > idx and pd.notna(row.iloc[idx]) else ""
-                componentes.append(valor)
+            valor = self._obtener_valor(row, campo)
+            componentes.append(valor)
         return tuple(componentes)
     
     def _analizar_shadows_rules(self):
@@ -363,11 +495,8 @@ class FirewallRuleAnalyzer:
             destinos_deny = set()
             
             for row in reglas:
-                if len(row) < 6:
-                    continue
-                    
-                destino = str(row.iloc[2]) if pd.notna(row.iloc[2]) else ""
-                action = str(row.iloc[5]) if pd.notna(row.iloc[5]) else ""
+                destino = self._obtener_valor(row, 'dest')
+                action = self._obtener_valor(row, 'action')
                 
                 if action == 'DENY' and destino not in ['all', 'any', '']:
                     destinos_deny.add(destino)
@@ -377,7 +506,7 @@ class FirewallRuleAnalyzer:
                         tipo='RIESGO',
                         severidad='MEDIA',
                         seccion=seccion,
-                        regla=row.iloc[0],
+                        regla=self._obtener_numero_regla(row),
                         descripcion=f'Regla ACCEPT para destino {destino} pero existe DENY previo',
                         recomendacion='Revisar orden de reglas - posiblemente esta regla nunca se aplica'
                     )
@@ -387,7 +516,10 @@ class FirewallRuleAnalyzer:
             'Tipo': tipo,
             'Severidad': severidad,
             'Sección': seccion,
-            'Regla': regla if pd.notna(regla) else 'N/A',
+            'Regla': regla if regla and regla != 'nan' else 'N/A',
             'Descripción': descripcion,
             'Recomendación': recomendacion
         })
+    
+    def obtener_estadisticas(self):
+        return dict(self.estadisticas)
