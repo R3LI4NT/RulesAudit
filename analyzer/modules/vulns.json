@@ -1,10 +1,10 @@
 {
-    "version": "1.0",
-    "descripcion": "Motor completo de vulnerabilidades para RulesAudit",
+    "version": "2.0",
+    "descripcion": "Motor completo de vulnerabilidades para RulesAudit - Versión mejorada con predicción inteligente",
     "metadata": {
         "autor": "R3LI4NT",
         "fecha_creacion": "2026-02-22",
-        "ultima_actualizacion": "2026-02-22",
+        "ultima_actualizacion": "2026-02-24",
         "categorias": [
             "Servicios Inseguros",
             "Configuración Incorrecta",
@@ -1579,23 +1579,70 @@
             ]
         },
         {
-            "nombre": "ICMP_ILIMITADO",
-            "descripcion": "ICMP permitido sin limitaciones",
-            "recomendacion": "Limitar tipos de ICMP necesarios (echo, destination unreachable), bloquear el resto",
+            "nombre": "ICMP_GENERICO_SIN_LIMITAR",
+            "descripcion": "ICMP genérico permitido sin limitación de tipos",
+            "recomendacion": "Especificar tipos de ICMP necesarios (echo-request, echo-reply, destination-unreachable, time-exceeded)",
             "tipo": "ADVERTENCIA",
             "severidad": "BAJA",
             "categoria": "Tráfico Especial",
             "condiciones": [
                 {
                     "campo": "service",
-                    "patron": "(?i).*icmp.*",
+                    "patron": "icmp$|icmp\\s*[;,]|\\bicmp\\b|icmp\\s*$",
+                    "tipo": "regex",
+                    "descripcion": "ICMP sin especificar tipo (solo 'icmp')"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ICMP_TIPOS_ESPECIFICOS",
+            "descripcion": "ICMP permitido con tipos específicos - normal para monitoreo",
+            "recomendacion": "Verificar que solo se permitan los tipos necesarios (echo-request para ping)",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "icmp-request|echo-request|echo-reply|destination-unreachable|time-exceeded|parameter-problem",
+                    "tipo": "regex",
+                    "descripcion": "ICMP con tipos específicos documentados"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ICMP_MONITOREO",
+            "descripcion": "ICMP para monitoreo con fuentes restringidas",
+            "recomendacion": "Configuración aceptable para monitoreo. Verificar que solo los servidores de monitoreo tengan acceso.",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Monitoreo",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "icmp|echo|ping",
                     "tipo": "regex"
                 },
                 {
-                    "campo": "service",
-                    "patron": "echo|echo-reply|unreachable|time-exceeded",
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "source",
+                    "patron": "(monitor|zabbix|nagios|icinga|prometheus|pr-|ts-|ds-|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)",
                     "tipo": "regex",
-                    "negado": true
+                    "descripcion": "Fuente restringida a servidores de monitoreo"
                 }
             ]
         },
@@ -1626,6 +1673,33 @@
                     "campo": "service",
                     "patron": "1024-65535|49152-65535|>1024",
                     "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ZABBIX_MONITOREO",
+            "descripcion": "Regla de monitoreo Zabbix con ICMP y puertos específicos",
+            "recomendacion": "Configuración adecuada para monitoreo. Mantener fuentes restringidas.",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Monitoreo",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "(10050|10051).*icmp|icmp.*(10050|10051)",
+                    "tipo": "regex",
+                    "descripcion": "Servicios típicos de Zabbix (ICMP + puertos 10050/10051)"
+                },
+                {
+                    "campo": "source",
+                    "patron": "zabbix|pr-zabbix|ts-zabbix|ds-zabbix|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
+                    "tipo": "regex",
+                    "descripcion": "Fuente típica de servidores Zabbix"
                 },
                 {
                     "campo": "action",
