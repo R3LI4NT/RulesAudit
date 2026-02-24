@@ -40,9 +40,9 @@ En caso de que las reglas exportadas del cliente tenga diferentes formatos, pued
 
 Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tomar las reglas y analizarlas en busca de configuración insegura basandose en el motor `vulns.json`.
 
-<img width="1170" height="945" alt="4" src="https://github.com/user-attachments/assets/47bd726d-a6dc-4574-b15c-9e7eaf52336b" />
+<img width="1726" height="942" alt="audit-1" src="https://github.com/user-attachments/assets/82aa2a2e-ce70-4f08-86c8-98c6d169318e" />
 
-<img width="1035" height="570" alt="5" src="https://github.com/user-attachments/assets/ff8beff3-0ed5-430c-b7bb-fddb39f3641d" />
+<img width="1165" height="421" alt="audit-2" src="https://github.com/user-attachments/assets/f19440c1-a3b7-4580-a3d8-3256c6716535" />
 
 Los resultados se guardan en un `excel` y un `html` interactivo para su posterior análisis:
 
