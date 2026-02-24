@@ -24,7 +24,7 @@ Cuenta con un motor propio de vulnerabilidades basado en el archivo `vulns.json`
 
 El archivo `mapeo\csv_to_excel` permite convertir una o varias reglas CSV a un formato más legible (Excel).
 
-<img width="1048" height="505" alt="2" src="https://github.com/user-attachments/assets/b7a69892-7c60-4b0d-a950-acc728624e48" />
+<img width="1333" height="653" alt="mapeo-2" src="https://github.com/user-attachments/assets/0bb6ce8c-01ef-4a0d-b7b9-93adaf1ecbb7" />
 
 Utiliza <a href="https://pandas.pydata.org/">Pandas</a> para estructurar los datos del Excel en diferentes headers según su tipo: **Policy, Source, Destination, Schedule, Service, Action, IP Pool, NAT, Type, Security Profiles, Log, Bytes, Extra_13**.
 
