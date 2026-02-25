@@ -364,14 +364,55 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             margin-right: 5px;
         }}
         
+        /* NUEVO ESTILO PARA EL FOOTER DEL MODAL */
         .modal-footer {{
             padding: 15px 20px;
             border-top: 1px solid var(--border-color);
-            text-align: right;
             background: var(--bg-tertiary);
             font-family: 'Share Tech Mono', monospace;
             font-size: 0.85em;
             color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+        
+        .nav-buttons {{
+            display: flex;
+            gap: 10px;
+        }}
+        
+        .nav-button {{
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }}
+        
+        .nav-button:hover:not(:disabled) {{
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }}
+        
+        .nav-button:disabled {{
+            opacity: 0.3;
+            cursor: not-allowed;
+        }}
+        
+        .help-text {{
+            color: var(--text-secondary);
+        }}
+        
+        .help-text i {{
+            margin: 0 3px;
+            color: var(--accent-green);
         }}
         
         /* HEADER HACKER */
@@ -1123,6 +1164,15 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             color: var(--accent-green);
         }}
         
+        .footer a {{
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }}
+        
+        .footer a:hover {{
+            text-decoration: underline;
+        }}
+        
         /* RESPONSIVE */
         @media (max-width: 1200px) {{
             .kpi-grid {{
@@ -1146,11 +1196,17 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             .filter-group {{
                 width: 100%;
             }}
+            
+            .modal-footer {{
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }}
         }}
     </style>
 </head>
 <body>
-    <!-- MODAL DE INSPECCIÓN -->
+    <!-- MODAL DE INSPECCIÓN CON BOTONES ANTERIOR/SIGUIENTE A LA IZQUIERDA -->
     <div id="inspectModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1201,7 +1257,17 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
                 </div>
             </div>
             <div class="modal-footer">
-                <span>Click fuera para cerrar • ESC para salir</span>
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="navegarVulnerabilidad(-1)" id="prevBtn" disabled>
+                        <i class="fas fa-chevron-left"></i> ANTERIOR
+                    </button>
+                    <button class="nav-button" onclick="navegarVulnerabilidad(1)" id="nextBtn">
+                        SIGUIENTE <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="help-text">
+                    <i class="fas fa-mouse-pointer"></i> Click fuera para cerrar
+                </div>
             </div>
         </div>
     </div>
@@ -1408,7 +1474,7 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
         <!-- Footer -->
         <div class="footer">
             <p>
-                <i class="fas fa-copyright"></i> RulesAudit v1.0 - [<a href="https://github.com/R3LI4NT/RulesAudit">GITHUB</a>] :: 
+                <i class="fas fa-copyright"></i> RulesAudit v1.0 - [<a href="https://github.com/R3LI4NT/RulesAudit" target="_blank">GITHUB</a>] :: 
                 | <i class="fas fa-user-secret"></i> {nombre_cliente} | <i class="fas fa-clock"></i> {fecha_reporte}
             </p>
         </div>
@@ -1435,11 +1501,36 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             document.getElementById('modalDescripcion').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.descripcion}}</span>`;
             document.getElementById('modalRecomendacion').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.recomendacion}}</span>`;
             
+            // Actualizar estado de botones de navegación
+            document.getElementById('prevBtn').disabled = currentVulnIndex === 0;
+            document.getElementById('nextBtn').disabled = currentVulnIndex === vulnerabilidadesData.length - 1;
+            
             // Mostrar modal
             document.getElementById('inspectModal').style.display = 'block';
             
             // Prevenir scroll del body
             document.body.style.overflow = 'hidden';
+        }}
+        
+        // Función para navegar entre vulnerabilidades
+        function navegarVulnerabilidad(direccion) {{
+            const nuevoIndex = currentVulnIndex + direccion;
+            if (nuevoIndex >= 0 && nuevoIndex < vulnerabilidadesData.length) {{
+                // Actualizar el índice y mostrar la nueva vulnerabilidad
+                currentVulnIndex = nuevoIndex;
+                const vuln = vulnerabilidadesData[currentVulnIndex];
+                
+                document.getElementById('modalSeveridad').innerHTML = getSeveridadHTML(vuln.severidad);
+                document.getElementById('modalTipo').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.tipo}}</span>`;
+                document.getElementById('modalSeccion').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.seccion}}</span>`;
+                document.getElementById('modalRegla').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.regla}}</span>`;
+                document.getElementById('modalDescripcion').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.descripcion}}</span>`;
+                document.getElementById('modalRecomendacion').innerHTML = `<span class="evidence-line"><strong>></strong> ${{vuln.recomendacion}}</span>`;
+                
+                // Actualizar botones
+                document.getElementById('prevBtn').disabled = currentVulnIndex === 0;
+                document.getElementById('nextBtn').disabled = currentVulnIndex === vulnerabilidadesData.length - 1;
+            }}
         }}
         
         // Función para obtener HTML de severidad con color
@@ -1507,10 +1598,17 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             }}
         }}
         
-        // Cerrar modal con tecla ESC
+        // Cerrar modal con tecla ESC y navegar con flechas
         document.addEventListener('keydown', function(event) {{
-            if (event.key === 'Escape') {{
-                cerrarModal();
+            const modal = document.getElementById('inspectModal');
+            if (modal.style.display === 'block') {{
+                if (event.key === 'Escape') {{
+                    cerrarModal();
+                }} else if (event.key === 'ArrowLeft') {{
+                    navegarVulnerabilidad(-1);
+                }} else if (event.key === 'ArrowRight') {{
+                    navegarVulnerabilidad(1);
+                }}
             }}
         }});
         
@@ -1607,12 +1705,6 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
             a.click();
         }}
         
-        // Inicialización
-        console.log('⚡ RulesAudit HACKER_EDITION cargado');
-        console.log('🎯 Cliente: {nombre_cliente}');
-        console.log('📊 Total vulnerabilidades: {stats['total']}');
-        console.log('🔍 Click en cualquier fila para inspeccionar');
-        console.log('📊 Click en las barras del gráfico para filtrar');
     </script>
 </body>
 </html>
@@ -1622,4 +1714,4 @@ def generar_template_html(stats, vulnerabilidades, top_tipos, secciones, nombre_
 
 
 def generar_donut_chart(stats):
-    return
+    return ""
