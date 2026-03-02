@@ -80,6 +80,8 @@ Para que los archivos de texto puedan ser cargados, los segmentos deben estar es
 
 Evitar agregar `.0/24` al final ya que retorna error de mapeo.
 
+➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descagar ejecutable</a>
+
 <h1 align="center"></h1>
 
 ### Consideraciones a tener en cuenta
