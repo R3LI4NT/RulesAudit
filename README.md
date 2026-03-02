@@ -72,6 +72,13 @@ Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
 <img width="1919" height="1029" alt="FWSA" src="https://github.com/user-attachments/assets/a8ac703d-6cf8-4c1b-99b7-a6bd4456aef4" />
 
+Para que los archivos de texto puedan ser cargados, los segmentos deben estar estructurados de la siguiente manera:
+```CDE_ejemplo.txt
+192.168.123.
+192.168.180.
+```
+
+Evitar agregar `.0/24` al final ya que retorna error de mapeo.
 
 <h1 align="center"></h1>
 
