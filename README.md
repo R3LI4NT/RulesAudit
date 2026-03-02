@@ -58,6 +58,20 @@ El reportador HTML permite exportar un CSV si usted así lo requiere.
 
 <h1 align="center"></h1>
 
+### TEST DE SEGMENTACIÓN
+
+Se desarrollo una aplicación de GUI `segmentación/segm_analyzer.py` con Tkinter para analizar las conexiones de origen y destino por segmento. Esto permite verificar que conexiones deben ser aceptadas (seguras) y cuáles no (inseguras).
+
+Contiene tres modos de verificación:
+
+Desde redes `CDE` **->** redes `CNTO`
+Desde redes `CNTO` **->** redes `CDE`
+Desde redes `NO-PCI` **->** redes `CNTO/CDE`
+
+
+
+<h1 align="center"></h1>
+
 ### Consideraciones a tener en cuenta
 
 El motor construido se basa en la lógica del Analista, usted debe analizar si las configuraciones inseguras encontradas son válidas y si corresponden a la severidad clasificada. Siéntase libre de optimizar y ampliar el archivo `vulns.json` para mejorar la precisión en la detección y clasificación de vulnerabilidades.
