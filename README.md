@@ -65,7 +65,9 @@ Se desarrollo una aplicación de GUI `segmentación/segm_analyzer.py` con Tkinte
 Contiene tres modos de verificación:
 
 Desde redes `CDE` **->** redes `CNTO`
+
 Desde redes `CNTO` **->** redes `CDE`
+
 Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
 
