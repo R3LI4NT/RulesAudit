@@ -70,6 +70,7 @@ Desde redes `CNTO` **->** redes `CDE`
 
 Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
+<img width="1919" height="1029" alt="FWSA" src="https://github.com/user-attachments/assets/a8ac703d-6cf8-4c1b-99b7-a6bd4456aef4" />
 
 
 <h1 align="center"></h1>
