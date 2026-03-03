@@ -70,7 +70,7 @@ Desde redes `CNTO` **->** redes `CDE`
 
 Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
-<img width="1919" height="1029" alt="FWSA" src="https://github.com/user-attachments/assets/a8ac703d-6cf8-4c1b-99b7-a6bd4456aef4" />
+<img width="1919" height="1032" alt="Segm-1" src="https://github.com/user-attachments/assets/eacd9138-8f5d-49cf-8b86-3ed70eeb0d65" />
 
 Para que los archivos de texto puedan ser cargados, los segmentos deben estar estructurados de la siguiente manera:
 ```CDE_ejemplo.txt
@@ -79,6 +79,12 @@ Para que los archivos de texto puedan ser cargados, los segmentos deben estar es
 ```
 
 Evitar agregar `.0/24` al final ya que retorna error de mapeo.
+
+Permite exportar el resultado en formato formato HTML interactivo.
+
+<img width="1918" height="944" alt="Segm-2" src="https://github.com/user-attachments/assets/b2ba3cab-c2d9-423e-86ca-69ecfeb6bdf1" />
+
+<img width="1919" height="943" alt="Segm-3" src="https://github.com/user-attachments/assets/dd735b17-607d-419b-aaaf-a87de3541948" />
 
 ➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descargar ejecutable</a>
 
