@@ -82,6 +82,8 @@ Evitar agregar `.0/24` al final ya que retorna error de mapeo.
 
 Permite exportar el resultado en formato formato HTML interactivo.
 
+<img width="1919" height="946" alt="Segm-0" src="https://github.com/user-attachments/assets/dab24066-27c3-4f01-a9b1-aa38fb217941" />
+
 <img width="1918" height="944" alt="Segm-2" src="https://github.com/user-attachments/assets/b2ba3cab-c2d9-423e-86ca-69ecfeb6bdf1" />
 
 <img width="1919" height="943" alt="Segm-3" src="https://github.com/user-attachments/assets/dd735b17-607d-419b-aaaf-a87de3541948" />
