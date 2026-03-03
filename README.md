@@ -88,7 +88,7 @@ Permite exportar el resultado en formato formato HTML interactivo.
 
 <img width="1919" height="943" alt="Segm-3" src="https://github.com/user-attachments/assets/dd735b17-607d-419b-aaaf-a87de3541948" />
 
-<br>
+</br>
 
 ➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descargar ejecutable</a>
 
