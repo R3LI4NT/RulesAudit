@@ -25,6 +25,7 @@ class FirewallSegmentacionApp:
 
     def configure_dark_mode(self):
         self.colors = {
+
             'bg': '#0a0e12',
             'fg': '#00ff9d',
             'secondary_bg': '#1a1e24',
@@ -37,8 +38,8 @@ class FirewallSegmentacionApp:
             'terminal_blue': '#5fa4e6', 
             'table_bg': '#0f1117',
             'table_header': '#1e2130',
-            'table_row_even': '#161a24',
-            'table_row_odd': '#1e2430',
+            'table_row_even': '#1a3b2e', 
+            'table_row_odd': '#1a3b2e',
             'grid_line_primary': '#2d3648',
             'grid_line_secondary': '#3e4a5e',
             'grid_line_accent': '#5f6b7f',
@@ -47,7 +48,9 @@ class FirewallSegmentacionApp:
             'white': '#ffffff',
             'details_bg': '#1a1f2a',
             'details_accent': '#00ccff',
-            'export_color': '#9d4edd'
+            'export_color': '#9d4edd',
+            'disabled_bg': '#5a3e3e',
+            'disabled_fg': '#ff9999'    
         }
         
         self.root.configure(bg=self.colors['bg'])
@@ -143,9 +146,11 @@ class FirewallSegmentacionApp:
             tree.heading(col, text=header, anchor='center')
             tree.column(col, width=width, minwidth=100, anchor='center')
 
+        # Configurar tags para colores
         tree.tag_configure('ok', background='#1a3b2e')
         tree.tag_configure('odd', background=self.colors['table_row_odd'])
         tree.tag_configure('even', background=self.colors['table_row_even'])
+        tree.tag_configure('disabled', background=self.colors['disabled_bg'], foreground=self.colors['disabled_fg'])
         
         tree.tag_configure('border_top', background=self.colors['grid_line_primary'])
         tree.tag_configure('border_bottom', background=self.colors['grid_line_secondary'])
@@ -607,10 +612,16 @@ class FirewallSegmentacionApp:
             
             total += 1
             
-            tag = 'even' if idx % 2 == 0 else 'odd'
+            # Determinar tag basado en si es regla deshabilitada
+            tipo_regla = str(row[type_col]) if type_col else "N/A"
+            
+            if 'Disabled' in tipo_regla or 'disabled' in tipo_regla.lower() or '[Disabled]' in tipo_regla:
+                tag = 'disabled'
+            else:
+                tag = 'even' if idx % 2 == 0 else 'odd'
             
             resultado = {
-                'Type': str(row[type_col]) if type_col else "N/A",
+                'Type': tipo_regla,
                 'Source': source,
                 'Destination': destination,
                 'Services': str(row[services_col]) if services_col else "ANY",
@@ -625,7 +636,7 @@ class FirewallSegmentacionApp:
                 resultado['Destination'],
                 resultado['Services'],
                 resultado['Actions']
-            ), tags=('ok', tag))
+            ), tags=(tag,))
         
         self.stats_labels['📄 Reglas:'].config(text=str(total))
         self.status_label.config(text=f"[+] Análisis completado: {total} reglas encontradas")
