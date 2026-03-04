@@ -80,13 +80,13 @@ Para que los archivos de texto puedan ser cargados, los segmentos deben estar es
 
 Evitar agregar `.0/24` al final ya que retorna error de mapeo.
 
-Permite exportar el resultado en formato formato HTML interactivo.
+Permite exportar el resultado en formato HTML interactivo.
 
 <img width="1919" height="952" alt="segm" src="https://github.com/user-attachments/assets/29b1a52e-96a0-445b-b873-9489c1a84613" />
 
 <img width="1919" height="948" alt="segm" src="https://github.com/user-attachments/assets/d32b2681-bb95-4140-9ced-d13efdec6a50" />
 
-<img width="1919" height="1031" alt="segm" src="https://github.com/user-attachments/assets/2c6d660b-b182-40e8-9dee-b0687e486516" />
+<img width="1919" height="943" alt="segm" src="https://github.com/user-attachments/assets/7c354c74-bf81-4ff3-9e8d-dd60d7ded1ec" />
 
 ➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descargar ejecutable</a>
 
