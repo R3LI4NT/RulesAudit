@@ -70,7 +70,7 @@ Contiene tres modos de verificación:
 
 **[MODO-3]:** Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
-<img width="1919" height="1032" alt="Segm-1" src="https://github.com/user-attachments/assets/eacd9138-8f5d-49cf-8b86-3ed70eeb0d65" />
+<img width="1919" height="1031" alt="segm1" src="https://github.com/user-attachments/assets/02f66360-a66a-4388-950a-5aa120dd538b" />
 
 Para que los archivos de texto puedan ser cargados, los segmentos deben estar estructurados de la siguiente manera:
 ```CDE_ejemplo.txt
@@ -82,12 +82,11 @@ Evitar agregar `.0/24` al final ya que retorna error de mapeo.
 
 Permite exportar el resultado en formato formato HTML interactivo.
 
-<img width="1919" height="946" alt="Segm-0" src="https://github.com/user-attachments/assets/dab24066-27c3-4f01-a9b1-aa38fb217941" />
+<img width="1919" height="952" alt="segm" src="https://github.com/user-attachments/assets/29b1a52e-96a0-445b-b873-9489c1a84613" />
 
-<img width="1918" height="944" alt="Segm-2" src="https://github.com/user-attachments/assets/b2ba3cab-c2d9-423e-86ca-69ecfeb6bdf1" />
+<img width="1919" height="948" alt="segm" src="https://github.com/user-attachments/assets/d32b2681-bb95-4140-9ced-d13efdec6a50" />
 
-<img width="1919" height="943" alt="Segm-3" src="https://github.com/user-attachments/assets/dd735b17-607d-419b-aaaf-a87de3541948" />
-
+<img width="1919" height="1031" alt="segm" src="https://github.com/user-attachments/assets/2c6d660b-b182-40e8-9dee-b0687e486516" />
 
 ➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descargar ejecutable</a>
 
