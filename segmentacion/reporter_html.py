@@ -58,7 +58,13 @@ def generar_reporte_html(resultados, modo_actual, stats, cde_prefixes, cnto_pref
 def generar_template_html(resultados, stats, datos_modo1, datos_modo2, titulo_modo1, titulo_modo2, modo_actual, nombre_archivo, fecha_reporte, timestamp, nombre_cliente):
     tabla_resultados = ""
     for i, r in enumerate(resultados, 1):
-        icono = "🟢"
+        # Detectar si es una regla deshabilitada para cambiar icono, color y borde
+        if 'Disabled' in r['Type'] or 'disabled' in r['Type'].lower() or '[Disabled]' in r['Type']:
+            icono = "🔴"  # Icono rojo para reglas deshabilitadas
+            badge_style = "padding: 6px 12px; white-space: nowrap; display: inline-block; width: auto; max-width: 100%; overflow: visible; color: #ff6666; border: 1px solid #ff6666; background: #5a3e3e;"
+        else:
+            icono = "🟢"  # Icono verde para reglas normales
+            badge_style = "padding: 6px 12px; white-space: nowrap; display: inline-block; width: auto; max-width: 100%; overflow: visible; color: var(--accent-green); border: 1px solid var(--accent-green); background: #1a3b2e;"
         
         tipo_con_padding = r['Type'].replace('<', '&lt;').replace('>', '&gt;')
         source_con_tooltip = r['Source'].replace('<', '&lt;').replace('>', '&gt;')
@@ -71,7 +77,7 @@ def generar_template_html(resultados, stats, datos_modo1, datos_modo2, titulo_mo
         tabla_resultados += f"""
         <tr class="scan-line" id="{row_id}" onclick="inspeccionarRegla({i})">
             <td><span class="glitch-number">{i:03d}</span></td>
-            <td><span class="badge badge-ok" style="padding: 6px 12px; white-space: nowrap; display: inline-block; width: auto; max-width: 100%; overflow: visible;">{icono} {tipo_con_padding}</span></td>
+            <td><span class="badge" style="{badge_style}">{icono} {tipo_con_padding}</span></td>
             <td class="matrix-text" style="padding: 12px 15px; max-width: 250px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto;" title="{source_con_tooltip}">{r['Source']}</td>
             <td class="matrix-text" style="padding: 12px 15px; max-width: 250px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto;" title="{dest_con_tooltip}">{r['Destination']}</td>
             <td class="matrix-text" style="padding: 12px 15px; max-width: 200px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto;" title="{services_con_tooltip}">{r['Services']}</td>
@@ -762,10 +768,7 @@ def generar_template_html(resultados, stats, datos_modo1, datos_modo2, titulo_mo
             border-left: 3px solid var(--accent-green);
         }}
         
-        .badge-ok {{
-            background: #1a3b2e;
-            color: var(--accent-green);
-            border: 1px solid var(--accent-green);
+        .badge {{
             font-family: 'Share Tech Mono', monospace;
             display: inline-block;
             padding: 6px 12px;
