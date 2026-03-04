@@ -64,11 +64,11 @@ Se desarrollo una aplicación de GUI `segmentación/segm_analyzer.py` con Tkinte
 
 Contiene tres modos de verificación:
 
-Desde redes `CDE` **->** redes `CNTO`
+**[MODO-1]** Desde redes `CDE` **->** redes `CNTO`
 
-Desde redes `CNTO` **->** redes `CDE`
+**[MODO-2]** Desde redes `CNTO` **->** redes `CDE`
 
-Desde redes `NO-PCI` **->** redes `CNTO/CDE`
+**[MODO-3]** Desde redes `NO-PCI` **->** redes `CNTO/CDE`
 
 <img width="1919" height="1032" alt="Segm-1" src="https://github.com/user-attachments/assets/eacd9138-8f5d-49cf-8b86-3ed70eeb0d65" />
 
