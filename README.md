@@ -99,7 +99,7 @@ Dirección donde corre: `http://127.0.0.1:5000/admin/login`
 
 <h1 align="center"></h1>
 
-### TEST DE SEGMENTACIÓN
+### TEST DE SEGMENTACIÓN - con reglas de Firewall
 
 Se desarrollo una aplicación de GUI `segmentación/segm_analyzer.py` con Tkinter para analizar las conexiones de origen y destino por segmento. Esto permite verificar que conexiones deben ser aceptadas (seguras) y cuáles no (inseguras).
 
@@ -130,6 +130,35 @@ Permite exportar el resultado en formato HTML interactivo.
 <img width="1919" height="943" alt="segm" src="https://github.com/user-attachments/assets/7c354c74-bf81-4ff3-9e8d-dd60d7ded1ec" />
 
 ➤ <a href="https://github.com/R3LI4NT/RulesAudit/releases">Descargar ejecutable</a>
+
+<h1 align="center"></h1>
+
+### TEST DE SEGMENTACIÓN - con Nmap
+
+En caso de que necesiten realizar pruebas de segmentación entre distintos segmentos de red y verificar si existen puertos abiertos entre ellos, pueden utilizar el script `segmentacion/nmap/TestSegmentosNmap.py`, el cual permite automatizar el proceso de escaneo.
+
+La función `nmap_cmd` permite especificarle a nmap que parámetros debe utilizar, estos pueden ser modificables.
+
+<img width="696" height="312" alt="seg-nmap" src="https://github.com/user-attachments/assets/8127b5ac-94bc-4ff9-add4-a0a6c7d1f03a" />
+
+En la variable `segmentos_lista` especifican aquellos segmentos que se desea testear.
+
+<img width="998" height="120" alt="seg-nmap-2" src="https://github.com/user-attachments/assets/906dbb66-41ab-4efb-b2d5-149015a0162d" />
+
+En caso de querer especificarle una archivo.txt con una lista de segmentos, pueden utilizar el parámetro `-a/--archivo`.
+```python3
+python3 TestSegmentosNmap.py --archivos segmentos.txt
+```
+
+Con el parámetro `--interfaz` se especificar porque interfaz de red se desea salir, por defecto es la **eth0**.
+```python3
+python3 TestSegmentosNmap.py --archivos segmentos.txt --interfaz wlan1
+```
+
+Los reportes XML (crudos) se almacenan en la carpeta `nmap_resultados`, pero pueden especificar otro directorio con el parámetro `--resultado`.
+```
+python3 TestSegmentosNmap.py --archivos segmentos.txt --resultados /home/usuario/Desktop/my-folder
+```
 
 <h1 align="center"></h1>
 
