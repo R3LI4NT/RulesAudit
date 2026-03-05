@@ -62,7 +62,7 @@ El reportador HTML permite exportar un CSV si usted así lo requiere.
 
 ### MODO WEB
 
-RulesAudit cuenta con una aplicación web desarrollada con el framework <href="https://flask.palletsprojects.com/en/stable/">Flask</a> diseñada para auditar y analizar las reglas de firewall de manera eficiente y profesional.
+RulesAudit cuenta con una aplicación web desarrollada con el framework <a href="https://flask.palletsprojects.com/en/stable/">Flask</a> diseñada para auditar y analizar las reglas de firewall de manera eficiente y profesional.
 
 | Componente | Tecnología |
 |------------|------------|
