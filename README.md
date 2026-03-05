@@ -134,7 +134,7 @@ El motor construido se basa en la lógica del Analista, usted debe analizar si l
 
 <h1 align="center"></h1>
 
-Correo de contacto:
+¿Te gustaría contribuir con la herramienta? Envíame un correo:
 
 <img src="https://img.shields.io/badge/r3li4nt.contact@keemail.me-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
 
