@@ -145,7 +145,7 @@ En la variable `segmentos_lista` especifican aquellos segmentos que se desea tes
 
 <img width="998" height="120" alt="seg-nmap-2" src="https://github.com/user-attachments/assets/906dbb66-41ab-4efb-b2d5-149015a0162d" />
 
-En caso de querer especificarle una archivo.txt con una lista de segmentos, pueden utilizar el parámetro `-a/--archivo`.
+En caso de querer especificarle un **archivo.txt** con una lista de segmentos, pueden utilizar el parámetro `-a/--archivo`.
 ```python3
 python3 TestSegmentosNmap.py --archivos segmentos.txt
 ```
