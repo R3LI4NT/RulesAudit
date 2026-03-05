@@ -84,6 +84,13 @@ Dirección donde corre: `http://127.0.0.1:5000/admin/login`
 |------------|------------|
 | **admin** | rulesaudit |
 
+<img width="1919" height="1034" alt="web-1" src="https://github.com/user-attachments/assets/0da40ff6-ec80-4e29-9f38-293532acb163" />
+
+<img width="1919" height="1034" alt="web-2" src="https://github.com/user-attachments/assets/1943dc71-d9a6-412e-95c0-0056b70b5ec4" />
+
+<img width="1919" height="1033" alt="web-3" src="https://github.com/user-attachments/assets/5df78376-3b8d-4c41-a330-2a9d91de3be0" />
+
+<img width="1070" height="318" alt="web-4" src="https://github.com/user-attachments/assets/f596812c-c0e2-4c67-8e83-9ec9213a27f4" />
 
 <h1 align="center"></h1>
 
