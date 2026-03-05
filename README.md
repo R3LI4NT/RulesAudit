@@ -77,6 +77,11 @@ Instalar dependencias antes de iniciar la aplicación:
 ```python3
 pip3 install -r requirements.txt
 ```
+
+Ejecutar:
+```python3
+python3 app.py
+```
 Dirección donde corre: `http://127.0.0.1:5000/admin/login`
 
 **Credenciales por defecto:**
