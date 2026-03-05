@@ -37,7 +37,9 @@ En caso de que las reglas exportadas del cliente tenga diferentes formatos, pued
 <img width="1096" height="887" alt="formatos" src="https://github.com/user-attachments/assets/eda0112b-9ad7-456c-97d5-c6570ee21489" />
 
 <h1 align="center"></h1>
+
 ### MODO CLI
+
 Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tomar las reglas y analizarlas en busca de configuración insegura basandose en el motor `vulns.json`.
 
 <img width="1726" height="942" alt="audit-1" src="https://github.com/user-attachments/assets/82aa2a2e-ce70-4f08-86c8-98c6d169318e" />
@@ -57,6 +59,7 @@ El reportador HTML permite exportar un CSV si usted así lo requiere.
 <img width="1917" height="945" alt="reporte" src="https://github.com/user-attachments/assets/2f666bad-f109-49d6-b43d-893a71867bd4" />
 
 <h1 align="center"></h1>
+
 ### MODO WEB
 
 RulesAudit cuenta con una aplicación web desarrollada con el framework <href="https://flask.palletsprojects.com/en/stable/">Flask</a> diseñada para auditar y analizar las reglas de firewall de manera eficiente y profesional.
