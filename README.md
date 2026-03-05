@@ -37,7 +37,7 @@ En caso de que las reglas exportadas del cliente tenga diferentes formatos, pued
 <img width="1096" height="887" alt="formatos" src="https://github.com/user-attachments/assets/eda0112b-9ad7-456c-97d5-c6570ee21489" />
 
 <h1 align="center"></h1>
-
+### MODO CLI
 Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tomar las reglas y analizarlas en busca de configuración insegura basandose en el motor `vulns.json`.
 
 <img width="1726" height="942" alt="audit-1" src="https://github.com/user-attachments/assets/82aa2a2e-ce70-4f08-86c8-98c6d169318e" />
@@ -55,6 +55,32 @@ El reportador HTML permite exportar un CSV si usted así lo requiere.
 <img width="1919" height="947" alt="html" src="https://github.com/user-attachments/assets/b2cae175-77a2-4bb2-9164-cd33d9121c77" />
 
 <img width="1917" height="945" alt="reporte" src="https://github.com/user-attachments/assets/2f666bad-f109-49d6-b43d-893a71867bd4" />
+
+<h1 align="center"></h1>
+### MODO WEB
+
+RulesAudit cuenta con una aplicación web desarrollada con el framework <href="https://flask.palletsprojects.com/en/stable/">Flask</a> diseñada para auditar y analizar las reglas de firewall de manera eficiente y profesional.
+
+| Componente | Tecnología |
+|------------|------------|
+| **Backend** | Flask (Python) |
+| **Frontend** | HTML5, CSS3, JavaScript |
+| **Estilos** | Google Fonts, Font Awesome |
+| **Procesamiento** | Pandas (análisis de Excel) |
+| **Templates** | Jinja2 |
+| **Sesiones** | Flask-Login |
+
+Instalar dependencias antes de iniciar la aplicación:
+```python3
+pip3 install -r requirements.txt
+```
+Dirección donde corre: `http://127.0.0.1:5000/admin/login`
+
+**Credenciales por defecto:**
+| Usuario| Contraseña |
+|------------|------------|
+| **admin** | rulesaudit |
+
 
 <h1 align="center"></h1>
 
