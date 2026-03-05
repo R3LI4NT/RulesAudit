@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RulesAudit - Admin Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <style>
+        .subtitle {
+            color: #44ff44;
+            font-size: 14px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #typed-text {
+            display: inline-block;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #0f0;
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            box-shadow: 0 0 10px #0f0;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='img/icon-3.png') }}" alt="RulesAudit Logo" width="110" height="120" style="object-fit: contain;">
+                </div>
+                <h1 class="title cyber-glow">Rules Audit</h1>
+                <div class="subtitle">
+                    <span id="typed-text"></span>
+                    <span class="terminal-cursor"></span>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="error-message show" style="color: {% if category == 'success' %}#00ff00{% else %}#ff3333{% endif %}; margin-bottom: 15px;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username">USUARIO</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="admin" autocomplete="off" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">CONTRASEÑA</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" autocomplete="off" required>
+                </div>
+
+                <button type="submit" class="btn-login cyber-glow">
+                    ACCESO AL SISTEMA
+                </button>
+
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/particulas.js') }}"></script>
+    
+    <script>
+        function typeWriter() {
+            const text = "Auditoría de Reglas de Firewall";
+            const typedTextElement = document.getElementById('typed-text');
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    typedTextElement.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 100);
+                }
+            }
+            
+            setTimeout(type, 500);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (!username || !password) {
+                e.preventDefault();
+                errorMsg.textContent = 'ACCESO DENEGADO - CREDENCIALES REQUERIDAS';
+                errorMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 3000);
+            }
+        });
+
+        window.onload = function() {
+            typeWriter();
+        };
+    </script>
+</body>
+</html>

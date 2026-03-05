@@ -1,0 +1,1791 @@
+{
+    "version": "2.0",
+    "descripcion": "Motor completo de vulnerabilidades para RulesAudit - Versión mejorada con predicción inteligente",
+    "metadata": {
+        "autor": "R3LI4NT",
+        "fecha_creacion": "2026-02-22",
+        "ultima_actualizacion": "2026-02-24",
+        "categorias": [
+            "Servicios Inseguros",
+            "Configuración Incorrecta",
+            "Exposición de Red",
+            "Falta de Auditoría",
+            "Malas Prácticas",
+            "Protocolos Obsoletos",
+            "Puertos Sensibles",
+            "Reglas Shadow",
+            "Duplicados",
+            "Tráfico Anómalo",
+            "Perfiles de Seguridad",
+            "NAT Inseguro",
+            "Redes Expuestas",
+            "IP Pools Inseguros"
+        ]
+    },
+    
+    "severidades": {
+        "CRÍTICA": {
+            "nivel": 5,
+            "color": "#8B0000",
+            "icono": "💀",
+            "descripcion": "Vulnerabilidad crítica que requiere atención inmediata.",
+            "tiempo_resolucion": "24 horas",
+            "impacto": "Compromiso total del sistema"
+        },
+        "ALTA": {
+            "nivel": 4,
+            "color": "#FF0000",
+            "icono": "🔴",
+            "descripcion": "Vulnerabilidad de alto riesgo. Probable compromiso de datos sensibles.",
+            "tiempo_resolucion": "72 horas",
+            "impacto": "Compromiso de datos sensibles"
+        },
+        "MEDIA": {
+            "nivel": 3,
+            "color": "#FFA500",
+            "icono": "🟠",
+            "descripcion": "Vulnerabilidad de riesgo medio. Potencial exposición de información.",
+            "tiempo_resolucion": "1 semana",
+            "impacto": "Exposición de información"
+        },
+        "BAJA": {
+            "nivel": 2,
+            "color": "#00FF00",
+            "icono": "🟢",
+            "descripcion": "Vulnerabilidad de bajo riesgo. Mejores prácticas de seguridad.",
+            "tiempo_resolucion": "1 mes",
+            "impacto": "Mejora de postura de seguridad"
+        },
+        "INFORMATIVA": {
+            "nivel": 1,
+            "color": "#0088FF",
+            "icono": "🔵",
+            "descripcion": "Información relevante sin riesgo inmediato. Recomendaciones de hardening.",
+            "tiempo_resolucion": "Cuando sea posible",
+            "impacto": "Optimización de configuración"
+        }
+    },
+    
+    "servicios_peligrosos": [
+        {
+            "nombre": "Telnet",
+            "patron": "telnet|port.*23|tcp.*23",
+            "descripcion": "Protocolo sin cifrar, credenciales en texto claro. Permite sniffing de contraseñas.",
+            "recomendacion": "Usar SSH en su lugar (puerto 22). Deshabilitar Telnet completamente.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 23,
+            "protocolo": "TCP",
+            "tags": ["legacy", "sin-cifrado", "autenticacion-debil"]
+        },
+        {
+            "nombre": "FTP",
+            "patron": "ftp|port.*21|tcp.*21",
+            "descripcion": "Transferencia de archivos sin cifrar. Credenciales y datos en texto claro.",
+            "recomendacion": "Usar SFTP (puerto 22) o FTPS (puerto 990). Implementar TLS 1.2+",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 21,
+            "protocolo": "TCP",
+            "tags": ["legacy", "sin-cifrado", "transferencia-archivos"]
+        },
+        {
+            "nombre": "FTP-Datos",
+            "patron": "ftp-data|port.*20|tcp.*20",
+            "descripcion": "Canal de datos de FTP sin cifrar. Exposición de archivos transferidos.",
+            "recomendacion": "Usar SFTP o FTPS que cifran tanto control como datos.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 20,
+            "protocolo": "TCP",
+            "tags": ["legacy", "sin-cifrado", "transferencia-archivos"]
+        },
+        {
+            "nombre": "TFTP",
+            "patron": "tftp|port.*69|udp.*69",
+            "descripcion": "Protocolo sin autenticación ni cifrado. Usado para boot remoto y configuraciones.",
+            "recomendacion": "Usar SFTP o SCP. Si es necesario, restringir por IP y usar VLAN aislada.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 69,
+            "protocolo": "UDP",
+            "tags": ["legacy", "sin-autenticacion", "boot"]
+        },
+        {
+            "nombre": "SNMP v1/v2",
+            "patron": "snmp|port.*161|udp.*161",
+            "descripcion": "Versiones antiguas de SNMP con community strings en texto claro.",
+            "recomendacion": "Usar SNMPv3 con autenticación y cifrado. Cambiar community strings por defecto.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 161,
+            "protocolo": "UDP",
+            "tags": ["monitoreo", "sin-cifrado", "autenticacion-debil"]
+        },
+        {
+            "nombre": "SNMP-Trap",
+            "patron": "snmptrap|port.*162|udp.*162",
+            "descripcion": "SNMP Traps sin cifrar. Exposición de alertas y eventos.",
+            "recomendacion": "Usar SNMPv3 con cifrado. Implementar TLS para traps.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 162,
+            "protocolo": "UDP",
+            "tags": ["monitoreo", "sin-cifrado"]
+        },
+        {
+            "nombre": "RDP",
+            "patron": "rdp|port.*3389|tcp.*3389|ms-term-services",
+            "descripcion": "Escritorio remoto expuesto. Alta tasa de ataques de fuerza bruta.",
+            "recomendacion": "Restringir por IP origen, usar VPN, habilitar NLA, cambiar puerto por defecto.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 3389,
+            "protocolo": "TCP",
+            "tags": ["acceso-remoto", "fuerza-bruta", "windows"]
+        },
+        {
+            "nombre": "SMB",
+            "patron": "smb|netbios|port.*445|tcp.*445|microsoft-ds|cifs",
+            "descripcion": "Protocolo de archivos compartidos de Windows. Históricamente vulnerable.",
+            "recomendacion": "Usar SMBv3 con cifrado y firmado. Bloquear en firewalls perimetrales.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 445,
+            "protocolo": "TCP",
+            "tags": ["windows", "archivos-compartidos", "ransomware"]
+        },
+        {
+            "nombre": "SMB v1 específico",
+            "patron": "smb1|ntlmv1|lanman",
+            "descripcion": "Versión 1 de SMB, vulnerable a ataques conocidos como EternalBlue.",
+            "recomendacion": "Deshabilitar SMBv1 completamente en todos los sistemas.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "tags": ["windows", "legacy", "ransomware"]
+        },
+        {
+            "nombre": "NetBIOS",
+            "patron": "netbios|port.*137|udp.*137|port.*138|udp.*138|port.*139|tcp.*139|nbname|nbdatagram|nbsession",
+            "descripcion": "Exposición de información de Windows. Permite enumeración de usuarios y shares.",
+            "recomendacion": "Deshabilitar NetBIOS en redes modernas. Usar DNS en su lugar.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puertos": [137, 138, 139],
+            "protocolo": "TCP/UDP",
+            "tags": ["windows", "enumeracion", "legacy"]
+        },
+        {
+            "nombre": "LDAP sin cifrar",
+            "patron": "ldap|port.*389|tcp.*389",
+            "descripcion": "Consultas a Active Directory/LDAP en texto claro. Exposición de credenciales.",
+            "recomendacion": "Usar LDAPS (puerto 636) o StartTLS. Implementar firmado de peticiones.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 389,
+            "protocolo": "TCP",
+            "tags": ["directorio-activo", "autenticacion", "sin-cifrado"]
+        },
+        {
+            "nombre": "LDAP Global Catalog",
+            "patron": "global-catalog|port.*3268|tcp.*3268",
+            "descripcion": "Catálogo global de AD sin cifrar. Expone información de todo el dominio.",
+            "recomendacion": "Usar versiones cifradas (puerto 3269). Implementar TLS.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 3268,
+            "protocolo": "TCP",
+            "tags": ["directorio-activo", "sin-cifrado"]
+        },
+        {
+            "nombre": "LDAPS Global Catalog",
+            "patron": "ldap-global-catalog-ssl|port.*3269|tcp.*3269",
+            "descripcion": "Catálogo global con SSL/TLS. Verificar configuración de certificados.",
+            "recomendacion": "Asegurar certificados válidos y configuraciones TLS seguras.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 3269,
+            "protocolo": "TCP",
+            "tags": ["directorio-activo", "tls"]
+        },
+        {
+            "nombre": "SQL Server",
+            "patron": "sql.*server|mssql|port.*1433|tcp.*1433",
+            "descripcion": "Base de datos expuesta directamente a la red. Alto riesgo de inyección SQL y acceso no autorizado.",
+            "recomendacion": "Restringir acceso solo a aplicaciones, usar firewalls de aplicación, implementar Always Encrypted.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 1433,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "windows", "datos-sensibles"]
+        },
+        {
+            "nombre": "SQL Server Browser",
+            "patron": "sql-browser|port.*1434|udp.*1434",
+            "descripcion": "Servicio de descubrimiento de SQL Server. Expone información de instancias.",
+            "recomendacion": "Deshabilitar si no es necesario. Restringir por firewall.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 1434,
+            "protocolo": "UDP",
+            "tags": ["base-datos", "descubrimiento"]
+        },
+        {
+            "nombre": "MySQL",
+            "patron": "mysql|port.*3306|tcp.*3306",
+            "descripcion": "Base de datos MySQL/MariaDB expuesta directamente.",
+            "recomendacion": "Restringir acceso por IP, usar conexiones SSL/TLS, implementar firewalls de aplicación.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 3306,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "linux", "datos-sensibles"]
+        },
+        {
+            "nombre": "PostgreSQL",
+            "patron": "postgres|postgresql|port.*5432|tcp.*5432",
+            "descripcion": "Base de datos PostgreSQL expuesta directamente.",
+            "recomendacion": "Restringir acceso por IP, usar SSL/TLS, configurar pg_hba.conf adecuadamente.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 5432,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "linux", "datos-sensibles"]
+        },
+        {
+            "nombre": "Oracle DB",
+            "patron": "oracle|port.*1521|tcp.*1521",
+            "descripcion": "Base de datos Oracle expuesta directamente.",
+            "recomendacion": "Usar Oracle Connection Manager, implementar SSL/TLS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 1521,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "oracle", "datos-sensibles"]
+        },
+        {
+            "nombre": "MongoDB",
+            "patron": "mongodb|port.*27017|tcp.*27017",
+            "descripcion": "Base de datos NoSQL MongoDB expuesta. Históricamente afectada por falta de autenticación.",
+            "recomendacion": "Habilitar autenticación, usar TLS, restringir por firewall, implementar RBAC.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 27017,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "nosql", "datos-sensibles"]
+        },
+        {
+            "nombre": "Redis",
+            "patron": "redis|port.*6379|tcp.*6379",
+            "descripcion": "Base de datos en memoria Redis expuesta. Puede permitir ejecución de comandos.",
+            "recomendacion": "Configurar autenticación, usar SSL/TLS, modo protegido, renombrar comandos peligrosos.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 6379,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "cache", "ejecucion-comandos"]
+        },
+        {
+            "nombre": "Elasticsearch",
+            "patron": "elasticsearch|port.*9200|tcp.*9200",
+            "descripcion": "Motor de búsqueda Elasticsearch expuesto. Puede exponer datos sensibles.",
+            "recomendacion": "Implementar autenticación, usar TLS, restringir por firewall, usar RBAC.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 9200,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "busqueda", "datos-sensibles"]
+        },
+        {
+            "nombre": "Cassandra",
+            "patron": "cassandra|port.*9042|tcp.*9042",
+            "descripcion": "Base de datos NoSQL Cassandra expuesta.",
+            "recomendacion": "Habilitar autenticación, usar TLS, configurar firewall, implementar internode encryption.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 9042,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "nosql", "datos-sensibles"]
+        },
+        {
+            "nombre": "CouchDB",
+            "patron": "couchdb|port.*5984|tcp.*5984",
+            "descripcion": "Base de datos CouchDB expuesta. Vulnerabilidades conocidas de acceso no autorizado.",
+            "recomendacion": "Habilitar autenticación, modo admin party, usar TLS, configurar CORS adecuadamente.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 5984,
+            "protocolo": "TCP",
+            "tags": ["base-datos", "nosql", "datos-sensibles"]
+        },
+        {
+            "nombre": "SSH",
+            "patron": "ssh|port.*22|tcp.*22",
+            "descripcion": "Permitir SSH ampliamente puede ser riesgoso. Sujeto a ataques de fuerza bruta.",
+            "recomendacion": "Restringir por IP origen, usar autenticación por llaves, deshabilitar root login, cambiar puerto.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 22,
+            "protocolo": "TCP",
+            "tags": ["acceso-remoto", "linux", "fuerza-bruta"]
+        },
+        {
+            "nombre": "HTTP sin cifrar",
+            "patron": "http|port.*80|tcp.*80|web",
+            "descripcion": "Tráfico web sin cifrar. Exposición de datos y sesiones.",
+            "recomendacion": "Usar HTTPS (puerto 443) con TLS 1.2+. Implementar HSTS y redirección automática.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 80,
+            "protocolo": "TCP",
+            "tags": ["web", "sin-cifrado", "aplicacion"]
+        },
+        {
+            "nombre": "HTTPS con TLS antiguo",
+            "patron": "https|ssl|tls|port.*443|tcp.*443",
+            "descripcion": "Posible uso de TLS 1.0/1.1 o cifrados débiles. Requiere verificación adicional.",
+            "recomendacion": "Usar TLS 1.2 o 1.3 exclusivamente. Deshabilitar cifrados débiles y protocolos antiguos.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "puerto": 443,
+            "protocolo": "TCP",
+            "tags": ["web", "tls", "cifrado"]
+        },
+        {
+            "nombre": "SMTP sin cifrar",
+            "patron": "smtp|port.*25|tcp.*25",
+            "descripcion": "Servicio de correo sin cifrar. Credenciales y mensajes en texto claro.",
+            "recomendacion": "Usar SMTPS (puerto 465) o STARTTLS (puerto 587). Implementar SPF, DKIM, DMARC.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 25,
+            "protocolo": "TCP",
+            "tags": ["correo", "sin-cifrado", "spam"]
+        },
+        {
+            "nombre": "SMTP Submission",
+            "patron": "smtp-submission|port.*587|tcp.*587",
+            "descripcion": "Servicio de envío de correo. Verificar que use STARTTLS obligatorio.",
+            "recomendacion": "Forzar STARTTLS, implementar autenticación, limitar por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 587,
+            "protocolo": "TCP",
+            "tags": ["correo", "tls"]
+        },
+        {
+            "nombre": "SMTPS",
+            "patron": "smtps|port.*465|tcp.*465",
+            "descripcion": "SMTP sobre SSL. Verificar configuración TLS adecuada.",
+            "recomendacion": "Usar TLS 1.2+, certificados válidos, deshabilitar cifrados débiles.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 465,
+            "protocolo": "TCP",
+            "tags": ["correo", "tls"]
+        },
+        {
+            "nombre": "POP3 sin cifrar",
+            "patron": "pop3|port.*110|tcp.*110",
+            "descripcion": "Descarga de correo sin cifrar. Credenciales y mensajes expuestos.",
+            "recomendacion": "Usar POP3S (puerto 995) con TLS. Considerar migrar a IMAP con TLS.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 110,
+            "protocolo": "TCP",
+            "tags": ["correo", "sin-cifrado"]
+        },
+        {
+            "nombre": "POP3S",
+            "patron": "pop3s|port.*995|tcp.*995",
+            "descripcion": "POP3 sobre SSL. Verificar configuración TLS.",
+            "recomendacion": "Usar TLS 1.2+, certificados válidos.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 995,
+            "protocolo": "TCP",
+            "tags": ["correo", "tls"]
+        },
+        {
+            "nombre": "IMAP sin cifrar",
+            "patron": "imap|port.*143|tcp.*143",
+            "descripcion": "Acceso a correo sin cifrar. Credenciales y mensajes expuestos.",
+            "recomendacion": "Usar IMAPS (puerto 993) con TLS. Implementar autenticación fuerte.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 143,
+            "protocolo": "TCP",
+            "tags": ["correo", "sin-cifrado"]
+        },
+        {
+            "nombre": "IMAPS",
+            "patron": "imaps|port.*993|tcp.*993",
+            "descripcion": "IMAP sobre SSL. Verificar configuración TLS.",
+            "recomendacion": "Usar TLS 1.2+, certificados válidos.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 993,
+            "protocolo": "TCP",
+            "tags": ["correo", "tls"]
+        },
+        {
+            "nombre": "DNS",
+            "patron": "dns|port.*53|udp.*53|tcp.*53",
+            "descripcion": "Servicio DNS expuesto. Puede ser usado para amplificación de DDoS.",
+            "recomendacion": "Restringir consultas recursivas, implementar DNSSEC, rate limiting.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 53,
+            "protocolo": "TCP/UDP",
+            "tags": ["red", "ddos", "infraestructura"]
+        },
+        {
+            "nombre": "DHCP",
+            "patron": "dhcp|port.*67|udp.*67|port.*68|udp.*68",
+            "descripcion": "Servicio DHCP. Puede permitir ataques de DHCP spoofing.",
+            "recomendacion": "Usar DHCP snooping en switches, implementar autenticación 802.1X.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puertos": [67, 68],
+            "protocolo": "UDP",
+            "tags": ["red", "dhcp", "lan"]
+        },
+        {
+            "nombre": "NTP",
+            "patron": "ntp|port.*123|udp.*123",
+            "descripcion": "Servicio NTP. Puede ser usado para amplificación de DDoS.",
+            "recomendacion": "Restringir consultas, usar versiones seguras, implementar rate limiting.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 123,
+            "protocolo": "UDP",
+            "tags": ["red", "ddos", "tiempo"]
+        },
+        {
+            "nombre": "Kerberos",
+            "patron": "kerberos|port.*88|tcp.*88|udp.*88",
+            "descripcion": "Servicio de autenticación Kerberos. Crítico para Active Directory.",
+            "recomendacion": "Asegurar que use cifrado AES, monitorear ataques de Golden Ticket.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "puerto": 88,
+            "protocolo": "TCP/UDP",
+            "tags": ["autenticacion", "windows", "ad"]
+        },
+        {
+            "nombre": "RSYNC",
+            "patron": "rsync|port.*873|tcp.*873",
+            "descripcion": "Herramienta de sincronización. Puede exponer archivos sin autenticación.",
+            "recomendacion": "Usar SSH como transporte, implementar autenticación, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 873,
+            "protocolo": "TCP",
+            "tags": ["sincronizacion", "archivos", "backup"]
+        },
+        {
+            "nombre": "NFS",
+            "patron": "nfs|port.*2049|tcp.*2049",
+            "descripcion": "Network File System. Puede exponer archivos sin cifrar.",
+            "recomendacion": "Usar NFSv4 con Kerberos, restringir por IP, implementar exportaciones seguras.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 2049,
+            "protocolo": "TCP",
+            "tags": ["archivos-compartidos", "linux", "sin-cifrado"]
+        },
+        {
+            "nombre": "NFS Mount",
+            "patron": "nfs-mount|port.*20048|tcp.*20048",
+            "descripcion": "Servicio de montaje NFS. Puede exponer información de exportaciones.",
+            "recomendacion": "Restringir acceso, usar firewalls, implementar autenticación.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 20048,
+            "protocolo": "TCP",
+            "tags": ["archivos-compartidos", "linux"]
+        },
+        {
+            "nombre": "NFS Lock Manager",
+            "patron": "nfs-lock|port.*4045|tcp.*4045|udp.*4045",
+            "descripcion": "Servicio de bloqueo NFS. Puede ser explotado.",
+            "recomendacion": "Restringir acceso, mantener actualizado.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 4045,
+            "protocolo": "TCP/UDP",
+            "tags": ["archivos-compartidos", "linux"]
+        },
+        {
+            "nombre": "RPC Bind",
+            "patron": "rpc|port.*111|tcp.*111|udp.*111|portmapper",
+            "descripcion": "Servicio de mapeo RPC. Expone información de servicios.",
+            "recomendacion": "Restringir acceso, usar firewalls, considerar deshabilitar si no es necesario.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 111,
+            "protocolo": "TCP/UDP",
+            "tags": ["rpc", "enumeracion"]
+        },
+        {
+            "nombre": "X11",
+            "patron": "x11|x-windows|port.*6000|tcp.*6000",
+            "descripcion": "Sistema de ventanas X11. Puede permitir captura de pantalla y teclado.",
+            "recomendacion": "Usar SSH X11 forwarding, restringir por IP, usar autenticación MIT-MAGIC-COOKIE.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 6000,
+            "protocolo": "TCP",
+            "tags": ["interfaz-grafica", "linux", "exposicion"]
+        },
+        {
+            "nombre": "VNC",
+            "patron": "vnc|port.*5900|tcp.*5900|rfb",
+            "descripcion": "Virtual Network Computing. Protocolo sin cifrar por defecto.",
+            "recomendacion": "Usar SSH tunneling, implementar autenticación fuerte, cambiar puerto.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 5900,
+            "protocolo": "TCP",
+            "tags": ["acceso-remoto", "sin-cifrado"]
+        },
+        {
+            "nombre": "VNC Auth VNC",
+            "patron": "vnc-auth|port.*5901|tcp.*5901",
+            "descripcion": "VNC con autenticación básica. Vulnerable a fuerza bruta.",
+            "recomendacion": "Usar autenticación fuerte, limitar intentos, usar VPN.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "tags": ["acceso-remoto", "autenticacion"]
+        },
+        {
+            "nombre": "Redis sin autenticación",
+            "patron": "redis.*noauth|redis.*sin.auth",
+            "descripcion": "Redis sin autenticación. Permite ejecución de comandos arbitrarios.",
+            "recomendacion": "Configurar requirepass, usar protected mode, implementar firewall.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "tags": ["base-datos", "cache", "ejecucion-comandos"]
+        },
+        {
+            "nombre": "Memcached",
+            "patron": "memcached|port.*11211|tcp.*11211|udp.*11211",
+            "descripcion": "Sistema de caché. Puede ser usado para amplificación DDoS.",
+            "recomendacion": "Restringir por firewall, deshabilitar UDP si no es necesario, usar autenticación SASL.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 11211,
+            "protocolo": "TCP/UDP",
+            "tags": ["cache", "ddos", "amplificacion"]
+        },
+        {
+            "nombre": "Docker",
+            "patron": "docker|port.*2375|tcp.*2375",
+            "descripcion": "Docker API sin TLS. Permite control total del daemon.",
+            "recomendacion": "Usar TLS (puerto 2376), implementar autenticación, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 2375,
+            "protocolo": "TCP",
+            "tags": ["contenedores", "api", "sin-cifrado"]
+        },
+        {
+            "nombre": "Docker TLS",
+            "patron": "docker-tls|port.*2376|tcp.*2376",
+            "descripcion": "Docker API con TLS. Verificar configuración.",
+            "recomendacion": "Asegurar certificados válidos, usar autenticación de cliente.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 2376,
+            "protocolo": "TCP",
+            "tags": ["contenedores", "api", "tls"]
+        },
+        {
+            "nombre": "Kubernetes API",
+            "patron": "k8s|kubernetes|port.*6443|tcp.*6443",
+            "descripcion": "Kubernetes API server. Control total del cluster.",
+            "recomendacion": "Implementar RBAC, usar TLS, autenticación, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 6443,
+            "protocolo": "TCP",
+            "tags": ["contenedores", "orquestacion", "api"]
+        },
+        {
+            "nombre": "etcd",
+            "patron": "etcd|port.*2379|tcp.*2379|port.*2380|tcp.*2380",
+            "descripcion": "Almacén clave-valor de Kubernetes. Contiene datos sensibles.",
+            "recomendacion": "Usar TLS mutuo, restringir por firewall, implementar autenticación.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puertos": [2379, 2380],
+            "protocolo": "TCP",
+            "tags": ["contenedores", "kubernetes", "datos-sensibles"]
+        },
+        {
+            "nombre": "Kubelet",
+            "patron": "kubelet|port.*10250|tcp.*10250",
+            "descripcion": "Kubelet API. Permite ejecutar comandos en nodos.",
+            "recomendacion": "Habilitar autenticación y autorización, usar TLS, restringir por firewall.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 10250,
+            "protocolo": "TCP",
+            "tags": ["contenedores", "kubernetes", "ejecucion-comandos"]
+        },
+        {
+            "nombre": "Kubelet Read-only",
+            "patron": "kubelet-read|port.*10255|tcp.*10255",
+            "descripcion": "Kubelet API de solo lectura. Expone métricas e información.",
+            "recomendacion": "Deshabilitar, usar autenticación, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 10255,
+            "protocolo": "TCP",
+            "tags": ["contenedores", "kubernetes", "metricas"]
+        },
+        {
+            "nombre": "Jenkins",
+            "patron": "jenkins|port.*8080|tcp.*8080",
+            "descripcion": "Servidor CI/CD Jenkins. Puede permitir ejecución de jobs.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP, mantener actualizado.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 8080,
+            "protocolo": "TCP",
+            "tags": ["ci-cd", "automatizacion", "ejecucion"]
+        },
+        {
+            "nombre": "Jenkins con autenticación",
+            "patron": "jenkins-auth|port.*8080|tcp.*8080.*auth",
+            "descripcion": "Jenkins con autenticación básica. Vulnerable a fuerza bruta.",
+            "recomendacion": "Usar autenticación fuerte, 2FA, limitar intentos.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "tags": ["ci-cd", "autenticacion"]
+        },
+        {
+            "nombre": "Git",
+            "patron": "git|port.*9418|tcp.*9418",
+            "descripcion": "Protocolo Git sin cifrar. Exposición de código fuente.",
+            "recomendacion": "Usar SSH (puerto 22) o HTTPS (puerto 443) con TLS.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 9418,
+            "protocolo": "TCP",
+            "tags": ["version-control", "codigo-fuente", "sin-cifrado"]
+        },
+        {
+            "nombre": "GitLab",
+            "patron": "gitlab|port.*80|port.*443|tcp.*80|tcp.*443",
+            "descripcion": "GitLab expuesto. Contiene código fuente y credenciales.",
+            "recomendacion": "Forzar HTTPS, implementar 2FA, restringir por IP, mantener actualizado.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "tags": ["version-control", "codigo-fuente", "web"]
+        },
+        {
+            "nombre": "Jupyter Notebook",
+            "patron": "jupyter|notebook|port.*8888|tcp.*8888",
+            "descripcion": "Jupyter Notebook sin autenticación. Permite ejecución de código.",
+            "recomendacion": "Configurar autenticación, usar HTTPS, implementar tokens, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 8888,
+            "protocolo": "TCP",
+            "tags": ["data-science", "ejecucion-codigo", "sin-autenticacion"]
+        },
+        {
+            "nombre": "Hadoop",
+            "patron": "hadoop|port.*50070|tcp.*50070|port.*8088|tcp.*8088|port.*50075|tcp.*50075",
+            "descripcion": "Servicios Hadoop expuestos. Pueden permitir ejecución de jobs y acceso a datos.",
+            "recomendacion": "Implementar autenticación Kerberos, usar firewalls, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "tags": ["big-data", "hadoop", "datos-masivos"]
+        },
+        {
+            "nombre": "Spark",
+            "patron": "spark|port.*8080|tcp.*8080|port.*8081|tcp.*8081|port.*4040|tcp.*4040",
+            "descripcion": "Apache Spark UI. Expone información de jobs y ejecución.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "tags": ["big-data", "spark", "procesamiento"]
+        },
+        {
+            "nombre": "Kafka",
+            "patron": "kafka|port.*9092|tcp.*9092",
+            "descripcion": "Apache Kafka expuesto. Stream de datos en texto claro.",
+            "recomendacion": "Usar SSL/TLS, implementar autenticación SASL, restringir por firewall.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 9092,
+            "protocolo": "TCP",
+            "tags": ["big-data", "streaming", "mensajeria"]
+        },
+        {
+            "nombre": "ZooKeeper",
+            "patron": "zookeeper|port.*2181|tcp.*2181",
+            "descripcion": "Apache ZooKeeper. Coordinación de servicios, datos sensibles.",
+            "recomendacion": "Implementar autenticación SASL, usar TLS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 2181,
+            "protocolo": "TCP",
+            "tags": ["big-data", "coordinacion", "configuracion"]
+        },
+        {
+            "nombre": "RabbitMQ",
+            "patron": "rabbitmq|port.*5672|tcp.*5672|port.*15672|tcp.*15672",
+            "descripcion": "RabbitMQ expuesto. Mensajería en texto claro.",
+            "recomendacion": "Usar TLS (puerto 5671), implementar autenticación, cambiar credenciales por defecto.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puertos": [5672, 15672],
+            "protocolo": "TCP",
+            "tags": ["mensajeria", "cola", "rabbitmq"]
+        },
+        {
+            "nombre": "RabbitMQ Management",
+            "patron": "rabbitmq-mgmt|port.*15672|tcp.*15672",
+            "descripcion": "Interfaz de administración RabbitMQ. Control total.",
+            "recomendacion": "Restringir por IP, usar HTTPS, autenticación fuerte.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 15672,
+            "protocolo": "TCP",
+            "tags": ["mensajeria", "admin", "web"]
+        },
+        {
+            "nombre": "ActiveMQ",
+            "patron": "activemq|port.*61616|tcp.*61616|port.*8161|tcp.*8161",
+            "descripcion": "ActiveMQ expuesto. Mensajería y consola de administración.",
+            "recomendacion": "Usar SSL, implementar autenticación, restringir por IP, cambiar credenciales.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puertos": [61616, 8161],
+            "protocolo": "TCP",
+            "tags": ["mensajeria", "jms", "admin"]
+        },
+        {
+            "nombre": "Consul",
+            "patron": "consul|port.*8500|tcp.*8500",
+            "descripcion": "Hashicorp Consul. Service discovery y KV store.",
+            "recomendacion": "Implementar ACLs, usar TLS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puerto": 8500,
+            "protocolo": "TCP",
+            "tags": ["service-discovery", "configuracion", "hashicorp"]
+        },
+        {
+            "nombre": "Vault",
+            "patron": "vault|port.*8200|tcp.*8200",
+            "descripcion": "Hashicorp Vault. Almacén de secretos.",
+            "recomendacion": "Usar TLS, implementar autenticación fuerte, restringir por IP, audit logging.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "puerto": 8200,
+            "protocolo": "TCP",
+            "tags": ["secretos", "hashicorp", "autenticacion"]
+        },
+        {
+            "nombre": "Grafana",
+            "patron": "grafana|port.*3000|tcp.*3000",
+            "descripcion": "Grafana dashboards. Puede exponer métricas y datos.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 3000,
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "metricas", "dashboards"]
+        },
+        {
+            "nombre": "Prometheus",
+            "patron": "prometheus|port.*9090|tcp.*9090",
+            "descripcion": "Prometheus monitoring. Expone métricas y puede permitir consultas.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 9090,
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "metricas", "prometheus"]
+        },
+        {
+            "nombre": "Alertmanager",
+            "patron": "alertmanager|port.*9093|tcp.*9093",
+            "descripcion": "Prometheus Alertmanager. Gestión de alertas.",
+            "recomendacion": "Restringir por IP, implementar autenticación.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 9093,
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "alertas", "prometheus"]
+        },
+        {
+            "nombre": "Node Exporter",
+            "patron": "node-exporter|port.*9100|tcp.*9100",
+            "descripcion": "Node exporter de Prometheus. Métricas del sistema.",
+            "recomendacion": "Restringir por IP, no exponer directamente.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 9100,
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "metricas", "node"]
+        },
+        {
+            "nombre": "cAdvisor",
+            "patron": "cadvisor|port.*8080|tcp.*8080.*cadvisor",
+            "descripcion": "cAdvisor para métricas de contenedores.",
+            "recomendacion": "Restringir por IP, usar autenticación.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "tags": ["monitoreo", "contenedores", "metricas"]
+        },
+        {
+            "nombre": "Elasticsearch Kibana",
+            "patron": "kibana|port.*5601|tcp.*5601",
+            "descripcion": "Kibana dashboard para Elasticsearch.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "puerto": 5601,
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "logs", "elastic"]
+        },
+        {
+            "nombre": "Logstash",
+            "patron": "logstash|port.*9600|tcp.*9600|port.*5044|tcp.*5044",
+            "descripcion": "Logstash - procesamiento de logs.",
+            "recomendacion": "Implementar autenticación, usar TLS, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puertos": [9600, 5044],
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "logs", "elastic"]
+        },
+        {
+            "nombre": "Fluentd",
+            "patron": "fluentd|port.*24224|tcp.*24224|udp.*24224",
+            "descripcion": "Fluentd log collector.",
+            "recomendacion": "Implementar autenticación, usar TLS, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 24224,
+            "protocolo": "TCP/UDP",
+            "tags": ["monitoreo", "logs", "fluentd"]
+        },
+        {
+            "nombre": "Splunk",
+            "patron": "splunk|port.*8089|tcp.*8089|port.*8000|tcp.*8000|port.*9997|tcp.*9997",
+            "descripcion": "Splunk - gestión de logs y SIEM.",
+            "recomendacion": "Implementar autenticación fuerte, usar HTTPS, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "puertos": [8089, 8000, 9997],
+            "protocolo": "TCP",
+            "tags": ["monitoreo", "siem", "logs"]
+        },
+        {
+            "nombre": "Syslog",
+            "patron": "syslog|port.*514|udp.*514|tcp.*514",
+            "descripcion": "Syslog sin cifrar. Logs en texto claro.",
+            "recomendacion": "Usar syslog-ng con TLS, implementar RELP, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "puerto": 514,
+            "protocolo": "TCP/UDP",
+            "tags": ["monitoreo", "logs", "sin-cifrado"]
+        },
+        {
+            "nombre": "Rsyslog",
+            "patron": "rsyslog|port.*514|tcp.*514|udp.*514.*relp|port.*20514|tcp.*20514",
+            "descripcion": "Rsyslog con RELP. Verificar cifrado.",
+            "recomendacion": "Usar RELP con TLS, implementar autenticación.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "tags": ["monitoreo", "logs", "rsyslog"]
+        }
+    ],
+    
+    "puertos_sensibles": [
+        {
+            "nombre": "Puerto de administración expuesto",
+            "patron": "admin|manager|management|port.*(8080|8081|8082|8443|8888|9000|9090|10000)",
+            "descripcion": "Puerto de administración potencialmente expuesto.",
+            "recomendacion": "Restringir por IP, usar autenticación fuerte, considerar VPN.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "tags": ["admin", "gestion", "web"]
+        },
+        {
+            "nombre": "Puerto de base de datos expuesto",
+            "patron": "database|db|port.*(1433|1521|3306|5432|27017|6379|9042|5984|9200)",
+            "descripcion": "Puerto de base de datos expuesto directamente.",
+            "recomendacion": "Restringir por IP, usar conexiones cifradas, implementar firewall de aplicaciones.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "tags": ["base-datos", "datos-sensibles"]
+        },
+        {
+            "nombre": "Puerto de contenedores expuesto",
+            "patron": "container|docker|k8s|port.*(2375|2376|6443|10250|10255)",
+            "descripcion": "Puerto de orquestación de contenedores expuesto.",
+            "recomendacion": "Implementar TLS, autenticación, RBAC, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "tags": ["contenedores", "orquestacion", "api"]
+        },
+        {
+            "nombre": "Puerto de mensajería expuesto",
+            "patron": "message|queue|mq|port.*(5672|61616|9092|2181|8500)",
+            "descripcion": "Sistema de mensajería expuesto.",
+            "recomendacion": "Usar TLS, implementar autenticación, restringir por IP.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "tags": ["mensajeria", "cola", "streaming"]
+        },
+        {
+            "nombre": "Puerto de monitoreo expuesto",
+            "patron": "monitoring|metrics|port.*(9090|9100|3000|5601|9200)",
+            "descripcion": "Sistema de monitoreo expuesto.",
+            "recomendacion": "Implementar autenticación, usar HTTPS, restringir por IP.",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "tags": ["monitoreo", "metricas", "dashboards"]
+        }
+    ],
+    
+    "patrones_avanzados": [
+        {
+            "nombre": "ANY_ANY",
+            "descripcion": "Regla con origen y destino ANY (cualquier tráfico permitido)",
+            "recomendacion": "Restringir a IPs/redes específicas. Evitar ANY en reglas ACCEPT.",
+            "tipo": "CRÍTICA",
+            "severidad": "CRÍTICA",
+            "categoria": "Configuración Incorrecta",
+            "condiciones": [
+                {
+                    "campo": "source",
+                    "patron": "any|all|0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "dest",
+                    "patron": "any|all|0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ANY_ORIGEN",
+            "descripcion": "Regla con origen ANY permitiendo tráfico desde cualquier lugar",
+            "recomendacion": "Restringir a IPs/redes específicas de confianza.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "categoria": "Configuración Incorrecta",
+            "condiciones": [
+                {
+                    "campo": "source",
+                    "patron": "any|all|0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ANY_DESTINO",
+            "descripcion": "Regla con destino ANY permitiendo tráfico a cualquier destino",
+            "recomendacion": "Restringir a destinos específicos necesarios.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "categoria": "Configuración Incorrecta",
+            "condiciones": [
+                {
+                    "campo": "dest",
+                    "patron": "any|all|0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "RED_AMPLIA",
+            "descripcion": "Red demasiado amplia expuesta (máscara menor a /24)",
+            "recomendacion": "Segmentar en redes más pequeñas (ideal /24 o más específicas)",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "categoria": "Exposición de Red",
+            "condiciones": [
+                {
+                    "campo": "source|dest",
+                    "patron": "/([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])",
+                    "tipo": "cidr",
+                    "max_cidr": 24
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "RED_SUPER_AMPLIA",
+            "descripcion": "Red extremadamente amplia (máscara menor a /16)",
+            "recomendacion": "Segmentar urgentemente en redes más pequeñas. Alto riesgo de exposición.",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "categoria": "Exposición de Red",
+            "condiciones": [
+                {
+                    "campo": "source|dest",
+                    "patron": "/([0-9]|1[0-5])",
+                    "tipo": "cidr",
+                    "max_cidr": 16
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "RED_INTERNET",
+            "descripcion": "Red de internet expuesta (0.0.0.0/0 o ::/0)",
+            "recomendacion": "Evitar exponer redes completas a internet. Usar IPs específicas.",
+            "tipo": "RIESGO",
+            "severidad": "CRÍTICA",
+            "categoria": "Exposición de Red",
+            "condiciones": [
+                {
+                    "campo": "source|dest",
+                    "patron": "0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "NAT_SIN_POOL",
+            "descripcion": "NAT habilitado sin IP Pool específico",
+            "recomendacion": "Usar IP Pool dedicado para mejor control y auditoría",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "NAT Inseguro",
+            "condiciones": [
+                {
+                    "campo": "nat",
+                    "patron": "NAT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "ip_pool",
+                    "patron": "^$",
+                    "tipo": "regex",
+                    "descripcion": "IP Pool vacío"
+                }
+            ]
+        },
+        {
+            "nombre": "NAT_DINAMICO",
+            "descripcion": "NAT dinámico sin control de puertos",
+            "recomendacion": "Usar NAT estático con IPs específicas cuando sea posible",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "NAT Inseguro",
+            "condiciones": [
+                {
+                    "campo": "nat",
+                    "patron": "(?i).*dynamic.*|.*pat.*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "SIN_LOGGING",
+            "descripcion": "Regla ACCEPT sin logging habilitado",
+            "recomendacion": "Habilitar logging para todas las reglas ACCEPT con tráfico relevante",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Falta de Auditoría",
+            "condiciones": [
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "log",
+                    "patron": "disabled|^$|none|off|false",
+                    "tipo": "regex",
+                    "descripcion": "Logging deshabilitado o vacío"
+                }
+            ]
+        },
+        {
+            "nombre": "LOGGING_PARCIAL",
+            "descripcion": "Regla con logging solo para sesiones iniciadas",
+            "recomendacion": "Considerar logging para todos los intentos, no solo exitosos",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Falta de Auditoría",
+            "condiciones": [
+                {
+                    "campo": "log",
+                    "patron": "session.*start|violation",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "TODOS_SERVICIOS",
+            "descripcion": "Regla permite TODOS los servicios",
+            "recomendacion": "Restringir a servicios específicos necesarios por seguridad y rendimiento",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "categoria": "Malas Prácticas",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "ALL|ANY|^$",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "HTTP_PUERTO_NO_ESTANDAR",
+            "descripcion": "HTTP en puerto no estándar",
+            "recomendacion": "Usar puertos estándar para mejor compatibilidad y monitoreo, o documentar claramente",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Malas Prácticas",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "HTTP|80",
+                    "tipo": "contiene"
+                },
+                {
+                    "campo": "service",
+                    "patron": "80|443|8080|8443|3000|5000|8000|8080",
+                    "tipo": "regex",
+                    "negado": true,
+                    "descripcion": "No usa puertos estándar"
+                }
+            ]
+        },
+        {
+            "nombre": "HTTPS_PUERTO_NO_ESTANDAR",
+            "descripcion": "HTTPS en puerto no estándar",
+            "recomendacion": "Usar puertos estándar para mejor compatibilidad y monitoreo",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Malas Prácticas",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "HTTPS|443|TLS|SSL",
+                    "tipo": "contiene"
+                },
+                {
+                    "campo": "service",
+                    "patron": "443|8443|4443|9443",
+                    "tipo": "regex",
+                    "negado": true
+                }
+            ]
+        },
+        {
+            "nombre": "IP_POOL_AMPLIO",
+            "descripcion": "IP Pool demasiado amplio",
+            "recomendacion": "Usar rangos más pequeños (/29 o /30 idealmente)",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "IP Pools Inseguros",
+            "condiciones": [
+                {
+                    "campo": "ip_pool",
+                    "patron": "/([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])",
+                    "tipo": "cidr",
+                    "max_cidr": 29
+                }
+            ]
+        },
+        {
+            "nombre": "IP_POOL_SIN_CONTROL",
+            "descripcion": "IP Pool sin restricción de origen",
+            "recomendacion": "Asociar IP Pools a fuentes específicas",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "IP Pools Inseguros",
+            "condiciones": [
+                {
+                    "campo": "ip_pool",
+                    "patron": ".+",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "source",
+                    "patron": "any|all",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "SIN_SECURITY_PROFILES",
+            "descripcion": "Regla ACCEPT sin perfiles de seguridad (no-inspection)",
+            "recomendacion": "Aplicar perfiles de seguridad apropiados (AV, IPS, web filtering, etc.)",
+            "tipo": "RIESGO",
+            "severidad": "MEDIA",
+            "categoria": "Perfiles de Seguridad",
+            "condiciones": [
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "security_profiles",
+                    "patron": "no-inspection|^$|none|off",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "PERFILES_MINIMOS",
+            "descripcion": "Regla con perfiles de seguridad básicos",
+            "recomendacion": "Evaluar si necesita perfiles adicionales (antivirus, IPS, etc.)",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Perfiles de Seguridad",
+            "condiciones": [
+                {
+                    "campo": "security_profiles",
+                    "patron": "(?i).*(certificate|default).*",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "security_profiles",
+                    "patron": "(?i).*(av|ips|virus|web|filter|application).*",
+                    "tipo": "regex",
+                    "negado": true
+                }
+            ]
+        },
+        {
+            "nombre": "TRAFICO_CERO",
+            "descripcion": "Regla ACCEPT sin tráfico (0 bytes)",
+            "recomendacion": "Revisar si la regla sigue siendo necesaria o tiene errores de configuración",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Tráfico Anómalo",
+            "condiciones": [
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "bytes",
+                    "patron": "^0\\s*B$",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "TRAFICO_BAJO",
+            "descripcion": "Regla con tráfico muy bajo (menos de 1MB en período prolongado)",
+            "recomendacion": "Verificar si la regla es necesaria o si hay problemas de conectividad",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Tráfico Anómalo",
+            "condiciones": [
+                {
+                    "campo": "bytes",
+                    "patron": "KB|kB",
+                    "tipo": "contiene",
+                    "max_valor": 1024,
+                    "unidad": "KB"
+                }
+            ]
+        },
+        {
+            "nombre": "TRAFICO_ALTO",
+            "descripcion": "Regla con tráfico muy alto",
+            "recomendacion": "Verificar si el tráfico es normal o hay abuso/ataque",
+            "tipo": "INFORMACIÓN",
+            "severidad": "INFORMATIVA",
+            "categoria": "Tráfico Anómalo",
+            "condiciones": [
+                {
+                    "campo": "bytes",
+                    "patron": "GB",
+                    "tipo": "contiene",
+                    "min_valor": 100,
+                    "unidad": "GB"
+                }
+            ]
+        },
+        {
+            "nombre": "TRAFICO_EXCESIVO",
+            "descripcion": "Regla con tráfico excesivo (más de 1TB)",
+            "recomendacion": "Investigar inmediatamente - posible exfiltración de datos o ataque",
+            "tipo": "RIESGO",
+            "severidad": "ALTA",
+            "categoria": "Tráfico Anómalo",
+            "condiciones": [
+                {
+                    "campo": "bytes",
+                    "patron": "TB|GB",
+                    "tipo": "contiene",
+                    "min_valor": 1024,
+                    "unidad": "GB"
+                }
+            ]
+        },
+        {
+            "nombre": "DENY_ANY",
+            "descripcion": "Regla DENY con destino ANY - podría bloquear tráfico necesario",
+            "recomendacion": "Revisar si realmente se necesita bloquear todo o si es demasiado restrictivo",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Malas Prácticas",
+            "condiciones": [
+                {
+                    "campo": "action",
+                    "patron": "DENY",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "dest",
+                    "patron": "any|all|0\\.0\\.0\\.0/0|::/0",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "DENY_INEFECTIVO",
+            "descripcion": "Regla DENY que podría ser inefectiva por reglas ACCEPT anteriores",
+            "recomendacion": "Revisar orden de reglas - las reglas ACCEPT previas pueden estar permitiendo el tráfico",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "categoria": "Reglas Shadow",
+            "requiere_analisis_orden": true
+        },
+        {
+            "nombre": "REGLA_SIN_DESCRIPCION",
+            "descripcion": "Regla sin nombre descriptivo (solo número)",
+            "recomendacion": "Agregar descripción clara del propósito de la regla para facilitar auditorías",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Mantenibilidad",
+            "condiciones": [
+                {
+                    "campo": "policy",
+                    "patron": "^\\d+$",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "REGLA_GENERICA",
+            "descripcion": "Regla con nombre demasiado genérico",
+            "recomendacion": "Usar nombres más descriptivos que indiquen propósito, aplicación o negocio",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Mantenibilidad",
+            "condiciones": [
+                {
+                    "campo": "policy",
+                    "patron": "(?i).*(rule|temp|test|default|generic|general).*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "SCHEDULE_NOCTURNO",
+            "descripcion": "Regla con programación nocturna (fuera de horario laboral)",
+            "recomendacion": "Verificar si es intencional o podría indicar actividad sospechosa",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Horarios",
+            "condiciones": [
+                {
+                    "campo": "schedule",
+                    "patron": "(?i).*(night|off|non-working|after.*hours|midnight).*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "SCHEDULE_FIN_SEMANA",
+            "descripcion": "Regla activa solo en fines de semana",
+            "recomendacion": "Verificar si es para mantenimiento o podría ser sospechoso",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Horarios",
+            "condiciones": [
+                {
+                    "campo": "schedule",
+                    "patron": "(?i).*(weekend|saturday|sunday|non-working).*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "SCHEDULE_PERMANENTE",
+            "descripcion": "Regla siempre activa (schedule 'always')",
+            "recomendacion": "Evaluar si realmente necesita estar activa 24/7",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Horarios",
+            "condiciones": [
+                {
+                    "campo": "schedule",
+                    "patron": "(?i).*(always|all.*time|24x7).*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "TIPO_STANDARD_SIN_PROTECCION",
+            "descripcion": "Regla tipo Standard sin protecciones avanzadas",
+            "recomendacion": "Considerar usar tipos más restrictivos o con inspección profunda",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Tipo de Regla",
+            "condiciones": [
+                {
+                    "campo": "type",
+                    "patron": "(?i).*standard.*",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "security_profiles",
+                    "patron": "(?i).*(ips|av|virus|web).*",
+                    "tipo": "regex",
+                    "negado": true
+                }
+            ]
+        },
+        {
+            "nombre": "PROXY_ARP",
+            "descripcion": "Configuración de Proxy ARP detectada",
+            "recomendacion": "Revisar necesidad de Proxy ARP - puede causar problemas de red",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Configuración de Red",
+            "condiciones": [
+                {
+                    "campo": "type",
+                    "patron": "(?i).*proxy.*arp.*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "VLAN_NATIVA_DEFAULT",
+            "descripcion": "Uso de VLAN nativa por defecto (VLAN 1)",
+            "recomendacion": "Cambiar VLAN nativa para evitar ataques de VLAN hopping",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "categoria": "Configuración de Red",
+            "condiciones": [
+                {
+                    "campo": "interface|port",
+                    "patron": "(?i).*vlan[\\s._-]*1.*|.*native.*vlan.*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "INTERFAZ_TRONCAL",
+            "descripcion": "Interfaz configurada como troncal sin restricciones",
+            "recomendacion": "Limitar VLANs permitidas en troncales, deshabilitar DTP",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "categoria": "Configuración de Red",
+            "condiciones": [
+                {
+                    "campo": "interface|port",
+                    "patron": "(?i).*trunk.*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "MULTICAST_ABIERTO",
+            "descripcion": "Tráfico multicast permitido sin restricciones",
+            "recomendacion": "Restringir multicast a rangos y aplicaciones específicas",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "dest",
+                    "patron": "224\\.|225\\.|226\\.|227\\.|228\\.|229\\.|230\\.|231\\.|232\\.|233\\.|234\\.|235\\.|236\\.|237\\.|238\\.|239\\.",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "BROADCAST_ABIERTO",
+            "descripcion": "Tráfico broadcast permitido",
+            "recomendacion": "Restringir broadcast a segmentos locales, evitar propagación",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "dest",
+                    "patron": "255\\.255\\.255\\.255|.*\\.255$",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ICMP_GENERICO_SIN_LIMITAR",
+            "descripcion": "ICMP genérico permitido sin limitación de tipos",
+            "recomendacion": "Especificar tipos de ICMP necesarios (echo-request, echo-reply, destination-unreachable, time-exceeded)",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "icmp$|icmp\\s*[;,]|\\bicmp\\b|icmp\\s*$",
+                    "tipo": "regex",
+                    "descripcion": "ICMP sin especificar tipo (solo 'icmp')"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ICMP_TIPOS_ESPECIFICOS",
+            "descripcion": "ICMP permitido con tipos específicos - normal para monitoreo",
+            "recomendacion": "Verificar que solo se permitan los tipos necesarios (echo-request para ping)",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "icmp-request|echo-request|echo-reply|destination-unreachable|time-exceeded|parameter-problem",
+                    "tipo": "regex",
+                    "descripcion": "ICMP con tipos específicos documentados"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ICMP_MONITOREO",
+            "descripcion": "ICMP para monitoreo con fuentes restringidas",
+            "recomendacion": "Configuración aceptable para monitoreo. Verificar que solo los servidores de monitoreo tengan acceso.",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Monitoreo",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "icmp|echo|ping",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                },
+                {
+                    "campo": "source",
+                    "patron": "(monitor|zabbix|nagios|icinga|prometheus|pr-|ts-|ds-|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)",
+                    "tipo": "regex",
+                    "descripcion": "Fuente restringida a servidores de monitoreo"
+                }
+            ]
+        },
+        {
+            "nombre": "FRAGMENTOS_IP",
+            "descripcion": "Permite fragmentos IP sin inspección",
+            "recomendacion": "Usar inspección de fragmentos para evitar ataques de evasión",
+            "tipo": "ADVERTENCIA",
+            "severidad": "MEDIA",
+            "categoria": "Tráfico Especial",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "(?i).*fragment.*",
+                    "tipo": "regex"
+                }
+            ]
+        },
+        {
+            "nombre": "PUERTOS_ALTOS_ABIERTOS",
+            "descripcion": "Rango amplio de puertos altos permitido",
+            "recomendacion": "Restringir a puertos específicos necesarios por aplicación",
+            "tipo": "ADVERTENCIA",
+            "severidad": "BAJA",
+            "categoria": "Exposición de Red",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "1024-65535|49152-65535|>1024",
+                    "tipo": "regex"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        },
+        {
+            "nombre": "ZABBIX_MONITOREO",
+            "descripcion": "Regla de monitoreo Zabbix con ICMP y puertos específicos",
+            "recomendacion": "Configuración adecuada para monitoreo. Mantener fuentes restringidas.",
+            "tipo": "INFORMATIVA",
+            "severidad": "INFORMATIVA",
+            "categoria": "Monitoreo",
+            "condiciones": [
+                {
+                    "campo": "service",
+                    "patron": "(10050|10051).*icmp|icmp.*(10050|10051)",
+                    "tipo": "regex",
+                    "descripcion": "Servicios típicos de Zabbix (ICMP + puertos 10050/10051)"
+                },
+                {
+                    "campo": "source",
+                    "patron": "zabbix|pr-zabbix|ts-zabbix|ds-zabbix|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
+                    "tipo": "regex",
+                    "descripcion": "Fuente típica de servidores Zabbix"
+                },
+                {
+                    "campo": "action",
+                    "patron": "ACCEPT",
+                    "tipo": "exacto"
+                }
+            ]
+        }
+    ],
+    
+    "reglas_shadow": {
+        "nombre": "SHADOW_RULE",
+        "descripcion": "Posible shadow rule: Regla ACCEPT después de DENY similar - la regla ACCEPT podría no aplicarse nunca",
+        "recomendacion": "Revisar orden de reglas y consolidar. Las reglas DENY deben ir después de ACCEPT específicas.",
+        "tipo": "RIESGO",
+        "severidad": "MEDIA",
+        "campos_comparar": ["source", "dest", "service"],
+        "min_coincidencias": 2,
+        "considerar_orden": true,
+        "ignorar_si_any_any": true
+    },
+    
+    "reglas_shadow_inversas": {
+        "nombre": "SHADOW_RULE_INVERSA",
+        "descripcion": "Posible shadow rule: Regla ACCEPT después de DENY con mismo destino - inefectiva",
+        "recomendacion": "Revisar orden - la regla DENY previa bloquea todo el tráfico a ese destino",
+        "tipo": "RIESGO",
+        "severidad": "ALTA",
+        "considerar_orden": true
+    },
+    
+    "reglas_duplicadas": {
+        "nombre": "REGLA_DUPLICADA",
+        "descripcion": "Regla duplicada exacta - ineficiencia y posible confusión",
+        "recomendacion": "Eliminar reglas duplicadas, consolidar en una sola",
+        "tipo": "ADVERTENCIA",
+        "severidad": "BAJA",
+        "campos_clave": ["source", "dest", "service", "action", "schedule"],
+        "ignorar_si_any_any": false
+    },
+    
+    "reglas_duplicadas_parciales": {
+        "nombre": "REGLA_SIMILAR",
+        "descripcion": "Reglas muy similares que podrían consolidarse",
+        "recomendacion": "Revisar si pueden unificarse en una sola regla más general",
+        "tipo": "INFORMATIVA",
+        "severidad": "INFORMATIVA",
+        "campos_comparar": ["source", "dest", "service"],
+        "min_coincidencias": 3
+    },
+    
+    "reglas_contradictorias": {
+        "nombre": "REGLA_CONTRADICTORIA",
+        "descripcion": "Reglas contradictorias (mismo origen/destino con ACCEPT y DENY)",
+        "recomendacion": "Revisar lógica de negocio - probablemente una de las dos sobra",
+        "tipo": "ADVERTENCIA",
+        "severidad": "MEDIA"
+    },
+    
+    "reglas_obsoletas": {
+        "nombre": "REGLA_OBSOLETA",
+        "descripcion": "Regla sin hits en período prolongado (0 bytes)",
+        "recomendacion": "Revisar si la regla sigue siendo necesaria. Considerar eliminación.",
+        "tipo": "ADVERTENCIA",
+        "severidad": "BAJA",
+        "periodo_dias": 30,
+        "umbral_bytes": 1024
+    },
+    
+    "reglas_nuevas": {
+        "nombre": "REGLA_NUEVA",
+        "descripcion": "Regla creada recientemente sin historial de tráfico",
+        "recomendacion": "Monitorear tráfico para verificar que funciona según lo esperado",
+        "tipo": "INFORMATIVA",
+        "severidad": "INFORMATIVA",
+        "periodo_dias": 7
+    },
+    
+    "recomendaciones_generales": {
+        "principio_minimo_privilegio": "Aplicar principio de mínimo privilegio: solo permitir lo estrictamente necesario",
+        "segmentacion_redes": "Segmentar redes por función y sensibilidad (DMZ, interna, gestión, etc.)",
+        "defensa_profundidad": "Implementar múltiples capas de seguridad: firewall, IPS, antivirus, etc.",
+        "monitoreo_continuo": "Establecer monitoreo continuo de reglas y tráfico",
+        "revision_periodica": "Revisar reglas periódicamente (cada 3-6 meses) para eliminar reglas obsoletas",
+        "documentacion": "Documentar propósito de cada regla y contacto del responsable",
+        "cambio_controlado": "Implementar proceso de control de cambios para modificaciones",
+        "pruebas_seguridad": "Probar reglas antes de implementar en producción"
+    }
+}
