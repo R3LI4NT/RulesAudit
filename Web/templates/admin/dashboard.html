@@ -55,7 +55,14 @@
             z-index: 9998;
             transform: translate(-50%, -50%);
             transition: all 0.15s ease;
-            backdrop-filter: blur(2px);
+        }
+
+        .cursor-dot.lupa {
+            width: 20px !important;
+            height: 20px !important;
+            background: rgba(0, 255, 0, 0.9) !important;
+            mix-blend-mode: screen;
+            box-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00 !important;
         }
 
         .cursor-line-x {
@@ -1068,7 +1075,6 @@
             transform: translateY(-2px);
         }
 
-        /* ===== MODAL REDISEÑADO ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1122,7 +1128,6 @@
             }
         }
 
-        /* Línea superior animada */
         .modal-content::before {
             content: '';
             position: absolute;
@@ -1145,7 +1150,6 @@
             100% { transform: translateX(100%); }
         }
 
-        /* Esquinas decorativas */
         .modal-content::after {
             content: '';
             position: absolute;
@@ -1722,6 +1726,9 @@
         const cursorLineX = document.querySelector('.cursor-line-x');
         const cursorLineY = document.querySelector('.cursor-line-y');
 
+        // Detectar elementos de texto
+        const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, label, .report-name, .stat-label, .card-header h2, .user-badge span');
+
         document.addEventListener('mousemove', function(e) {
             const posX = e.clientX;
             const posY = e.clientY;
@@ -1734,7 +1741,22 @@
             cursorLineY.style.left = posX + 'px';
 
             const target = e.target;
-            if (target.matches('button, a, input, label, .action-item, .btn-analyze, .file-label, .action-btn, .btn-clear, .btn-logout, .modal-btn')) {
+            
+            // Verificar si el elemento es texto o interactivo
+            const isText = target.matches('h1, h2, h3, h4, h5, h6, p, span, a, label, .report-name, .stat-label, .card-header h2, .user-badge span');
+            const isInteractive = target.matches('button, a, input, label, .action-item, .btn-analyze, .file-label, .action-btn, .btn-clear, .btn-logout, .modal-btn');
+            
+            if (isText) {
+                // Efecto de lupa para texto
+                cursorDot.classList.add('lupa');
+                cursorOutline.style.width = '50px';
+                cursorOutline.style.height = '50px';
+                cursorOutline.style.borderColor = '#80ff80';
+                cursorLineX.style.opacity = '0.6';
+                cursorLineY.style.opacity = '0.6';
+            } else if (isInteractive) {
+                // Efecto para elementos interactivos
+                cursorDot.classList.remove('lupa');
                 cursorDot.style.width = '12px';
                 cursorDot.style.height = '12px';
                 cursorDot.style.background = '#80ff80';
@@ -1744,6 +1766,8 @@
                 cursorLineX.style.opacity = '0.6';
                 cursorLineY.style.opacity = '0.6';
             } else {
+                // Efecto normal
+                cursorDot.classList.remove('lupa');
                 cursorDot.style.width = '8px';
                 cursorDot.style.height = '8px';
                 cursorDot.style.background = '#00ff00';
