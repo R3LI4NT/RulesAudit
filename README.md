@@ -91,11 +91,9 @@ Dirección donde corre: `http://127.0.0.1:5000/admin/login`
 
 <img width="1909" height="1029" alt="web-1" src="https://github.com/user-attachments/assets/d7098e52-a5b7-4170-ba36-ebef3370c0f4" />
 
-<img width="1919" height="1034" alt="web-2" src="https://github.com/user-attachments/assets/1943dc71-d9a6-412e-95c0-0056b70b5ec4" />
+<img width="1919" height="1027" alt="web-2" src="https://github.com/user-attachments/assets/57652836-39f2-4783-bfbb-8ec37e21fe51" />
 
-<img width="1919" height="1033" alt="web-3" src="https://github.com/user-attachments/assets/5df78376-3b8d-4c41-a330-2a9d91de3be0" />
-
-<img width="1070" height="318" alt="web-4" src="https://github.com/user-attachments/assets/f596812c-c0e2-4c67-8e83-9ec9213a27f4" />
+<img width="1919" height="1032" alt="web-3" src="https://github.com/user-attachments/assets/24ef52a9-34de-4fb1-a6bb-3399200c6da9" />
 
 <h1 align="center"></h1>
 
