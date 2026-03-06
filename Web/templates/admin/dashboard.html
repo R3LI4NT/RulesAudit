@@ -7,6 +7,7 @@
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -24,10 +25,9 @@
             overflow-x: hidden;
         }
         
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:slnt,wght@3,555&family=Fjalla+One&display=swap');
         
         .text-title-h1 {
-            font-family: "Fjalla One", sans-serif;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 400;
             font-style: normal;
         }
@@ -169,17 +169,18 @@
         }
 
         .dashboard-header {
-            background: rgba(10, 30, 10, 0.8);
+            background: linear-gradient(135deg, #0a2f0a, #1a4a1a, #2a6a2a);
+            background-size: 200% 200%;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
             border-radius: 16px;
             padding: 20px 28px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(0, 255, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
@@ -187,20 +188,38 @@
         .dashboard-header::before {
             content: '';
             position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: headerShine 8s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes headerShine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
             top: -2px;
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, #00ff00, transparent, #00ff00, transparent);
+            background: linear-gradient(45deg, #00ff00, #80ff80, #00ff00, #80ff80);
             border-radius: 18px;
             z-index: -1;
-            animation: borderGlow 3s linear infinite;
-            opacity: 0.5;
+            opacity: 0.4;
+            animation: borderPulse 3s ease-in-out infinite;
         }
 
-        @keyframes borderGlow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
         }
 
         .header-left {
@@ -242,7 +261,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             background-size: 200% 200%;
-            animation: gradientShift 5s ease infinite;
+            animation: textGradient 5s ease infinite;
+        }
+
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .user-badge {
@@ -1726,9 +1751,6 @@
         const cursorLineX = document.querySelector('.cursor-line-x');
         const cursorLineY = document.querySelector('.cursor-line-y');
 
-        // Detectar elementos de texto
-        const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, label, .report-name, .stat-label, .card-header h2, .user-badge span');
-
         document.addEventListener('mousemove', function(e) {
             const posX = e.clientX;
             const posY = e.clientY;
@@ -1742,12 +1764,10 @@
 
             const target = e.target;
             
-            // Verificar si el elemento es texto o interactivo
             const isText = target.matches('h1, h2, h3, h4, h5, h6, p, span, a, label, .report-name, .stat-label, .card-header h2, .user-badge span');
             const isInteractive = target.matches('button, a, input, label, .action-item, .btn-analyze, .file-label, .action-btn, .btn-clear, .btn-logout, .modal-btn');
             
             if (isText) {
-                // Efecto de lupa para texto
                 cursorDot.classList.add('lupa');
                 cursorOutline.style.width = '50px';
                 cursorOutline.style.height = '50px';
@@ -1755,7 +1775,6 @@
                 cursorLineX.style.opacity = '0.6';
                 cursorLineY.style.opacity = '0.6';
             } else if (isInteractive) {
-                // Efecto para elementos interactivos
                 cursorDot.classList.remove('lupa');
                 cursorDot.style.width = '12px';
                 cursorDot.style.height = '12px';
@@ -1766,7 +1785,6 @@
                 cursorLineX.style.opacity = '0.6';
                 cursorLineY.style.opacity = '0.6';
             } else {
-                // Efecto normal
                 cursorDot.classList.remove('lupa');
                 cursorDot.style.width = '8px';
                 cursorDot.style.height = '8px';
