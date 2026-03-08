@@ -87,7 +87,7 @@ Dirección donde corre: `http://127.0.0.1:5000/admin/login`
 **Credenciales por defecto:**
 | Usuario| Contraseña |
 |------------|------------|
-| **admin** | rulesaudit |
+| **admin** | **rulesaudit** |
 
 <img width="1909" height="1029" alt="web-1" src="https://github.com/user-attachments/assets/d7098e52-a5b7-4170-ba36-ebef3370c0f4" />
 
