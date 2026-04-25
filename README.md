@@ -52,13 +52,14 @@ Los resultados se guardan en formatos `html` interactivo, `excel`, `csv` y `json
 
 <img width="1641" height="811" alt="excel" src="https://github.com/user-attachments/assets/74bcbd55-3c2d-427c-a6b8-2cc10d391586" />
 
--
+<img width="1919" height="1029" alt="Web-1" src="https://github.com/user-attachments/assets/760084a1-6390-4fa2-8fd2-3c743da2c2e8" />
 
-<img width="1919" height="954" alt="7" src="https://github.com/user-attachments/assets/1d638ec5-6fb8-4e76-8e1b-0f77946f4a32" />
+<img width="1919" height="1033" alt="Web-2" src="https://github.com/user-attachments/assets/59d67d85-bd83-4d29-a6ed-42644fae546b" />
 
-<img width="1919" height="947" alt="html" src="https://github.com/user-attachments/assets/b2cae175-77a2-4bb2-9164-cd33d9121c77" />
+<img width="1919" height="1028" alt="Web-3" src="https://github.com/user-attachments/assets/b445496a-22e0-421c-bba4-5cd760555053" />
 
-<img width="1917" height="945" alt="reporte" src="https://github.com/user-attachments/assets/2f666bad-f109-49d6-b43d-893a71867bd4" />
+<img width="1919" height="1031" alt="Web-4" src="https://github.com/user-attachments/assets/c11a1156-7ca7-4236-b870-f6ece6f4dd41" />
+
 
 <h1 align="center"></h1>
 
