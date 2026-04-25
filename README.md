@@ -52,8 +52,6 @@ Los resultados se guardan en formatos `html` interactivo, `excel`, `csv` y `json
 
 <img width="1641" height="811" alt="excel" src="https://github.com/user-attachments/assets/74bcbd55-3c2d-427c-a6b8-2cc10d391586" />
 
-El reportador HTML permite exportar un CSV si usted así lo requiere.
-
 <img width="1919" height="954" alt="7" src="https://github.com/user-attachments/assets/1d638ec5-6fb8-4e76-8e1b-0f77946f4a32" />
 
 <img width="1919" height="947" alt="html" src="https://github.com/user-attachments/assets/b2cae175-77a2-4bb2-9164-cd33d9121c77" />
