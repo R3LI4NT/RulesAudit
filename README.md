@@ -48,7 +48,7 @@ Luego de mapear los resultados, el módulo `analyzer\audit.py` se encarga de tom
 
 <img width="1143" height="673" alt="CLI-2" src="https://github.com/user-attachments/assets/12b5722a-74d0-499d-a376-6746150953eb" />
 
-Los resultados se guardan en un `excel` y un `html` interactivo para su posterior análisis:
+Los resultados se guardan en formatos `html` interactivo, `excel`, `csv` y `json` para su posterior análisis:
 
 <img width="1641" height="811" alt="excel" src="https://github.com/user-attachments/assets/74bcbd55-3c2d-427c-a6b8-2cc10d391586" />
 
