@@ -6,7 +6,7 @@
    <a href="https://dotnet.microsoft.com/">
     <img src="https://img.shields.io/badge/Python-Tool-00DD00.svg">
   </a>
-    <img src="https://img.shields.io/badge/Release-2.0-00DD00.svg">
+    <img src="https://img.shields.io/badge/Release-2.1-00DD00.svg">
   </a>
     <img src="https://img.shields.io/badge/Public-%F0%9F%97%9D%EF%B8%8F-00DD00.svg">
   </a>
