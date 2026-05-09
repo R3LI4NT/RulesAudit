@@ -136,7 +136,7 @@ Permite exportar el resultado en formato HTML interactivo.
 
 ### TEST DE SEGMENTACIÓN - con Nmap
 
-En caso de que necesiten realizar pruebas de segmentación entre distintos segmentos de red y verificar si existen puertos abiertos entre ellos, pueden utilizar el script `segmentacion/nmap/TestSegmentosNmap.py`, el cual permite automatizar el proceso de escaneo.
+En caso de que necesiten realizar pruebas de segmentación entre distintos segmentos de red y verificar si existen puertos abiertos entre ellos, pueden utilizar el script: `segmentacion/nmap/SegmentacionNmapCLI.py`, el cual permite automatizar el proceso de escaneo.
 
 La función `nmap_cmd` permite especificarle a nmap que parámetros debe utilizar, estos pueden ser modificables.
 
@@ -148,18 +148,22 @@ En la variable `segmentos_lista` especifican aquellos segmentos que se desea tes
 
 En caso de querer especificarle un **archivo.txt** con una lista de segmentos, pueden utilizar el parámetro `-a/--archivo`.
 ```python3
-python3 TestSegmentosNmap.py --archivos segmentos.txt
+python3 SegmentacionNmapCLI --archivos segmentos.txt
 ```
 
 Con el parámetro `--interfaz` se especificar porque interfaz de red se desea salir, por defecto es la **eth0**.
 ```python3
-python3 TestSegmentosNmap.py --archivos segmentos.txt --interfaz wlan1
+python3 SegmentacionNmapCLI --archivos segmentos.txt --interfaz wlan1
 ```
 
 Los reportes XML (crudos) se almacenan en la carpeta `nmap_resultados`, pero pueden especificar otro directorio con el parámetro `--resultado`.
 ```
-python3 TestSegmentosNmap.py --archivos segmentos.txt --resultados /home/usuario/Desktop/my-folder
+python3 SegmentacionNmapCLI --archivos segmentos.txt --resultados /home/usuario/Desktop/my-folder
 ```
+
+Si desean utilizar el modo GUI, pueden ejecutar el siguiente script: `segmentacion/nmap/SegmentacionNmapGUI.py`.
+
+<img width="1293" height="860" src="https://github.com/user-attachments/assets/77e4b877-0e43-45b6-897b-07782ad76e7b" />
 
 <h1 align="center"></h1>
 
