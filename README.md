@@ -160,6 +160,7 @@ Los reportes XML (crudos) se almacenan en la carpeta `nmap_resultados`, pero pue
 ```
 python3 SegmentacionNmapCLI --archivos segmentos.txt --resultados /home/usuario/Desktop/my-folder
 ```
+</br>
 
 Si desean utilizar el modo GUI, pueden ejecutar el siguiente script: `segmentacion/nmap/SegmentacionNmapGUI.py`.
 
